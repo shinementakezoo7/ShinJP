@@ -426,13 +426,13 @@ Can generate 1,000+ books without infrastructure changes, supporting massive con
 ## 📞 Support & Next Steps
 
 ### Getting Started
-1. Review [BOOK_GENERATION_SYSTEM_PLAN.md](./docs/BOOK_GENERATION_SYSTEM_PLAN.md)
+1. Review [BOOK_GENERATION_SYSTEM_PLAN.md](../BOOK_GENERATION_SYSTEM_PLAN.md)
 2. Run database migration
 3. Implement orchestrator (Week 1)
 4. Generate first test book (Week 2)
 
 ### Need Help?
-- 📖 Read [BOOK_GENERATION_README.md](./docs/BOOK_GENERATION_README.md)
+- 📖 Read [BOOK_GENERATION_README.md](../BOOK_GENERATION_README.md)
 - 🔧 Check troubleshooting section
 - 💬 Review code comments in migration file
 

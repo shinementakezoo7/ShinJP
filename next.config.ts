@@ -109,11 +109,10 @@ const nextConfig: NextConfig = {
 }
 
 // Apply Million.js compiler (70% faster React!)
-// Note: Disabled for compatibility with Next.js 15.5.4
-// const millionConfig = million.next(nextConfig, {
-//   auto: true, // Automatic optimization
-//   rsc: true, // Support React Server Components
-// })
+const millionConfig = million.next(nextConfig, {
+  auto: true, // Automatic optimization
+  rsc: true, // Support React Server Components
+})
 
 // Apply bundle analyzer
-export default withBundleAnalyzer(nextConfig)
+export default withBundleAnalyzer(millionConfig)

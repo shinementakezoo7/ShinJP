@@ -19,7 +19,7 @@ Congratulations! You now have a comprehensive documentation suite for building a
 12. **[SUMMARY_OF_FILES.md](./SUMMARY_OF_FILES.md)** - Documentation inventory
 
 ### Supporting Script
-- **[verify_setup.sh](./verify_setup.sh)** - Setup verification tool
+- Setup verification tool removed (verify_setup.sh no longer included)
 
 ## 🚀 Platform Capabilities
 

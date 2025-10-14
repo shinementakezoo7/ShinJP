@@ -206,7 +206,32 @@ export interface UserAchievement {
   created_at: string
 }
 
-// Conversation Types
+// Chat Conversation Types (New persistent chat system)
+export interface ChatConversation {
+  id: string
+  user_id: string | null
+  title: string
+  model: string
+  context_window: number
+  total_tokens: number
+  message_count: number
+  last_message_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+// Chat Message Types
+export interface ChatMessage {
+  id: string
+  conversation_id: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  tokens: number
+  metadata: Record<string, unknown>
+  created_at: string
+}
+
+// Legacy Conversation Types (Old system - kept for backwards compatibility)
 export interface Conversation {
   id: number
   user_id: string
@@ -217,7 +242,7 @@ export interface Conversation {
   created_at: string
 }
 
-// Message Types
+// Legacy Message Types (Old system - kept for backwards compatibility)
 export interface Message {
   id: number
   conversation_id: number
@@ -606,4 +631,36 @@ export interface EnhancedTextbookChapter {
   generated_at: string | null
   created_at: string
   updated_at: string
+}
+
+// ============================================================================
+// Database Type Union (for Supabase client)
+// ============================================================================
+
+export interface Database {
+  public: {
+    Tables: {
+      conversations: {
+        Row: ChatConversation
+        Insert: Omit<ChatConversation, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<ChatConversation, 'id' | 'created_at'>>
+      }
+      messages: {
+        Row: ChatMessage
+        Insert: Omit<ChatMessage, 'id' | 'created_at'>
+        Update: Partial<Omit<ChatMessage, 'id' | 'created_at'>>
+      }
+      users: {
+        Row: UserProfile
+        Insert: Omit<UserProfile, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<UserProfile, 'id' | 'created_at'>>
+      }
+      // Add other tables as needed
+      [key: string]: {
+        Row: Record<string, unknown>
+        Insert: Record<string, unknown>
+        Update: Record<string, unknown>
+      }
+    }
+  }
 }

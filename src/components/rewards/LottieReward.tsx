@@ -268,7 +268,7 @@ export default function LottieReward({
  *   show={showReward}
  *   type="achievement"
  *   title="Achievement Unlocked!"
- *   subtitle="You've completed N5 Level 1"
+ *   subtitle="You&apos;ve completed N5 Level 1"
  *   onComplete={() => setShowReward(false)}
  * />
  *
@@ -277,7 +277,7 @@ export default function LottieReward({
  *   show={showLevelUp}
  *   type="levelUp"
  *   title="Level Up!"
- *   subtitle="You're now N4 level"
+ *   subtitle="You&apos;re now N4 level"
  *   duration={4000}
  * />
  *

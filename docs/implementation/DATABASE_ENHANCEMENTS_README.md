@@ -92,12 +92,12 @@ pg_dump "$POSTGRES_URL" > backup_$(date +%Y%m%d).sql
 
 **Via psql:**
 ```bash
-psql "$POSTGRES_URL" < database/migrations/011_advanced_enhancements.sql
+psql "$POSTGRES_URL" < ../../database/migrations/011_advanced_enhancements.sql
 ```
 
 ### Step 3: Initialize Data
 ```bash
-psql "$POSTGRES_URL" < database/QUICK_START_ADVANCED.sql
+psql "$POSTGRES_URL" < ../../database/QUICK_START_ADVANCED.sql
 ```
 
 ### Step 4: Update Application Code
@@ -314,7 +314,7 @@ SELECT * FROM database_health_check();
 
 ### Built-in Monitoring Queries (20 queries)
 
-Run `database/monitoring_queries.sql` to get:
+Run `../../database/monitoring_queries.sql` to get:
 
 1. Database overview
 2. Table sizes
@@ -525,11 +525,11 @@ This is a **production-grade database enhancement** with:
 
 ## 📖 Quick Links
 
-- [Implementation Guide](database/README_IMPLEMENTATION.md)
-- [Full Analysis](docs/DATABASE_ANALYSIS_AND_ENHANCEMENTS.md)
-- [Migration File](database/migrations/011_advanced_enhancements.sql)
-- [Quick Start](database/QUICK_START_ADVANCED.sql)
-- [Advanced Client](src/lib/database/advanced-client.ts)
-- [Monitoring Queries](database/monitoring_queries.sql)
+- [Implementation Guide](../../database/README_IMPLEMENTATION.md)
+- [Full Analysis](./DATABASE_ANALYSIS_AND_ENHANCEMENTS.md)
+- [Migration File](../../database/migrations/011_advanced_enhancements.sql)
+- [Quick Start](../../database/QUICK_START_ADVANCED.sql)
+- [Advanced Client](../../src/lib/database/advanced-client.ts)
+- [Monitoring Queries](../../database/monitoring_queries.sql)
 
 **Happy Coding! 🚀**

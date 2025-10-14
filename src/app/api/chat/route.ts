@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { ModelTask, modelRouter } from '@/lib/ai/model-router'
+import { checkRateLimit, aiRatelimit } from '@/lib/rate-limit'
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system'
@@ -9,15 +10,34 @@ interface ChatMessage {
 interface ChatRequest {
   messages: ChatMessage[]
   temperature?: number
+  stream?: boolean
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: ChatRequest = await request.json()
-    const { messages, temperature = 0.7 } = body
+    const { messages, temperature = 0.7, stream = true } = body
 
     if (!messages || messages.length === 0) {
       return NextResponse.json({ error: 'Messages are required' }, { status: 400 })
+    }
+
+    // Rate limiting
+    const identifier = request.headers.get('x-forwarded-for') || 'anonymous'
+    const rateLimitResult = await checkRateLimit(identifier, aiRatelimit)
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        {
+          error: 'Rate limit exceeded',
+          details: 'Too many requests. Please try again later.',
+          reset: rateLimitResult.reset,
+        },
+        {
+          status: 429,
+          headers: rateLimitResult.headers,
+        }
+      )
     }
 
     // Check if NVIDIA API is configured
@@ -87,7 +107,7 @@ export async function POST(request: NextRequest) {
 - Be overly academic or use jargon
 - Forget to provide practical examples
 
-Remember: You're teaching in ENGLISH to help students LEARN Japanese. Your goal is making Japanese accessible and understandable, just like you've done for thousands of international students over 30 years.`,
+Remember: You&apos;re teaching in ENGLISH to help students LEARN Japanese. Your goal is making Japanese accessible and understandable, just like you&apos;ve done for thousands of international students over 30 years.`,
     }
 
     // Prepare messages for the AI
@@ -96,6 +116,12 @@ Remember: You're teaching in ENGLISH to help students LEARN Japanese. Your goal 
     console.log('🤖 Processing chat request with NVIDIA stockmark-2-100b-instruct...')
     console.log(`   Messages count: ${aiMessages.length}`)
     console.log(`   Temperature: ${temperature}`)
+    console.log(`   Streaming: ${stream}`)
+
+    // Handle streaming vs non-streaming
+    if (stream) {
+      return handleStreamingResponse(aiMessages, temperature)
+    }
 
     // Route to NVIDIA API using stockmark-2-100b-instruct with 122K context window support
     let response
@@ -183,6 +209,85 @@ Remember: You're teaching in ENGLISH to help students LEARN Japanese. Your goal 
       { status: statusCode }
     )
   }
+}
+
+// Streaming response handler
+async function handleStreamingResponse(messages: ChatMessage[], temperature: number) {
+  const encoder = new TextEncoder()
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        // Route to NVIDIA API
+        const response = await modelRouter.route({
+          task: ModelTask.CONVERSATION_PRACTICE,
+          messages: messages.map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+          })),
+          temperature,
+          maxTokens: 8000,
+        })
+
+        if (!response || !response.content) {
+          throw new Error('AI returned an empty response')
+        }
+
+        const content = response.content.trim()
+
+        // Simulate streaming by chunking the response
+        // This provides a smooth typing effect
+        const words = content.split(' ')
+        let buffer = ''
+
+        for (let i = 0; i < words.length; i++) {
+          buffer += (i > 0 ? ' ' : '') + words[i]
+
+          // Send chunks of 3-5 words for natural flow
+          if (i % 4 === 3 || i === words.length - 1) {
+            const chunk = JSON.stringify({
+              type: 'content',
+              content: buffer,
+            })
+            controller.enqueue(encoder.encode(`data: ${chunk}\n\n`))
+            buffer = ''
+
+            // Small delay between chunks for typing effect
+            await new Promise((resolve) => setTimeout(resolve, 50))
+          }
+        }
+
+        // Send completion event with metadata
+        const doneChunk = JSON.stringify({
+          type: 'done',
+          model: response.model,
+          usage: response.usage,
+        })
+        controller.enqueue(encoder.encode(`data: ${doneChunk}\n\n`))
+
+        console.log('✅ Streaming response completed')
+        controller.close()
+      } catch (error) {
+        console.error('❌ Streaming error:', error)
+
+        // Send error event
+        const errorChunk = JSON.stringify({
+          type: 'error',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        })
+        controller.enqueue(encoder.encode(`data: ${errorChunk}\n\n`))
+        controller.close()
+      }
+    },
+  })
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache, no-transform',
+      Connection: 'keep-alive',
+    },
+  })
 }
 
 // Health check endpoint

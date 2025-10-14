@@ -19,6 +19,8 @@
     "format:check": "biome format .",
     "format:prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "format:prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "docs:format": "prettier --write \"docs/**/*.md\"",
+    "docs:format:check": "prettier --check \"docs/**/*.md\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
@@ -35,7 +37,10 @@
     "prepare": "husky",
     "book:test": "tsx scripts/test-book-generation.ts",
     "book:generate": "tsx scripts/generate-ssw-book.ts",
-    "book:generate-all": "tsx scripts/generate-all-ssw-books.ts"
+    "book:generate-all": "tsx scripts/generate-all-ssw-books.ts",
+    "docs:index": "node scripts/generate-docs-index.js",
+    "docs:links": "node scripts/check-docs-links.js",
+    "docs:links:fix": "node scripts/fix-docs-links.js && node scripts/check-docs-links.js"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.44",
@@ -88,7 +93,7 @@
     "lucide-react": "^0.545.0",
     "million": "^3.1.11",
     "nanoid": "^5.1.6",
-    "next": "15.5.4",
+    "next": "^15.5.5",
     "next-auth": "^4.24.11",
     "next-seo": "^6.8.0",
     "pexels": "^1.4.0",

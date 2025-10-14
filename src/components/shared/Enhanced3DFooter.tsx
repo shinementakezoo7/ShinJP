@@ -78,18 +78,18 @@ export default function Enhanced3DFooter() {
 
         {/* Torii gates decoration */}
         <motion.div
-          className="absolute top-10 left-10 text-9xl opacity-5 pointer-events-none"
+          className="absolute top-10 left-10 opacity-5 pointer-events-none"
           animate={{ rotate: [0, 5, 0], scale: [1, 1.05, 1] }}
           transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY }}
         >
-          ⛩️
+          <img src="/icons/torii.svg" alt="Torii" className="w-24 h-24" />
         </motion.div>
         <motion.div
-          className="absolute bottom-10 right-10 text-9xl opacity-5 pointer-events-none"
+          className="absolute bottom-10 right-10 opacity-5 pointer-events-none"
           animate={{ rotate: [0, -5, 0], scale: [1, 1.05, 1] }}
           transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY, delay: 5 }}
         >
-          ⛩️
+          <img src="/icons/torii.svg" alt="Torii" className="w-24 h-24" />
         </motion.div>
       </div>
 
@@ -99,7 +99,7 @@ export default function Enhanced3DFooter() {
           {[...Array(8)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute text-3xl"
+              className="absolute"
               initial={{ x: Math.random() * 100 + '%', y: -50, rotate: 0, opacity: 0.1 }}
               animate={{
                 y: '120%',
@@ -113,7 +113,7 @@ export default function Enhanced3DFooter() {
                 ease: 'linear',
               }}
             >
-              🌸
+              <img src="/icons/sakura.svg" alt="Sakura" className="w-6 h-6 opacity-40" />
             </motion.div>
           ))}
         </div>
@@ -176,13 +176,13 @@ export default function Enhanced3DFooter() {
               viewport={{ once: true }}
               transition={{ duration: 1 }}
             />
-            <motion.span
+            <motion.img
+              src="/icons/sakura.svg"
+              alt="Sakura"
               animate={{ rotate: [0, 360], scale: [1, 1.2, 1] }}
               transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY }}
-              className="text-3xl"
-            >
-              🌸
-            </motion.span>
+              className="w-8 h-8"
+            />
             <motion.div
               className="h-px w-24 bg-gradient-to-r from-transparent via-red-400 to-transparent"
               initial={{ scaleX: 0 }}

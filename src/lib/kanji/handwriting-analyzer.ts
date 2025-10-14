@@ -220,9 +220,9 @@ function generateFeedback(data: {
   if (data.accuracyScore >= 90) {
     overall = 'Excellent! Your handwriting is very accurate.'
   } else if (data.accuracyScore >= 70) {
-    overall = "Good work! You're on the right track."
+    overall = 'Good work! You&apos;re on the right track.'
   } else if (data.accuracyScore >= 50) {
-    overall = "Keep practicing! You're making progress."
+    overall = 'Keep practicing! You&apos;re making progress.'
   } else {
     overall = 'Practice more to improve your technique.'
   }

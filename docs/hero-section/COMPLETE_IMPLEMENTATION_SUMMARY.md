@@ -1309,9 +1309,9 @@ The Shinmen Takezo Japanese-themed hero sections successfully deliver:
 ### Related Documentation
 
 - 📘 [Main README](../../README.md) - Project overview and setup
-- 🏗️ [Architecture Docs](../architecture/) - System architecture
+- 🏗️ [Architecture Docs](../implementation/) - System architecture
 - 🗄️ [Database Schema](../../database/) - Supabase PostgreSQL structure
-- 🤖 [AI Integration](../features/ai-integration.md) - NVIDIA AI system
+- 🤖 [AI Integration](../implementation/AI_INTEGRATION.md) - NVIDIA AI system
 - 🔐 [Authentication](../features/authentication-enhancements.md) - Auth system
 - 📊 [Dashboard](../dashboard/) - User dashboard components
 

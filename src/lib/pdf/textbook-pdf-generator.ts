@@ -370,7 +370,7 @@ function generateHTML(
   <div class="cover">
     <div class="cover-title">Congratulations! 🎉</div>
     <div class="cover-info">
-      You've completed "${textbook.title}"
+      You&apos;ve completed "${textbook.title}"
     </div>
     <div class="cover-info" style="margin-top: 30px;">
       Keep practicing and advancing your Japanese! 頑張ってください！

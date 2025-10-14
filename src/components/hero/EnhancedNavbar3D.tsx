@@ -26,10 +26,10 @@ export default function EnhancedNavbar3D() {
   }, [])
 
   const menuItems = [
-    { href: '/dashboard', label: 'Dashboard', emoji: '🎯', kanji: '道' },
-    { href: '/ssw', label: 'SSW', emoji: '📚', kanji: '特' },
-    { href: '/showcase', label: 'Showcase', emoji: '✨', kanji: '展' },
-    { href: '/demo', label: 'Demo', emoji: '🎮', kanji: '試' },
+    { href: '/dashboard', label: 'Dashboard', icon: '/icons/target.svg', kanji: '道' },
+    { href: '/ssw', label: 'SSW', icon: '/icons/book.svg', kanji: '特' },
+    { href: '/showcase', label: 'Showcase', icon: '/icons/sakura.svg', kanji: '展' },
+    { href: '/demo', label: 'Demo', icon: '/icons/gamepad.svg', kanji: '試' },
   ]
 
   return (
@@ -147,11 +147,19 @@ export default function EnhancedNavbar3D() {
                     {/* Content */}
                     <div className="relative flex items-center gap-2">
                       <motion.span
-                        className="text-lg"
+                        className="block"
                         animate={{ rotate: [0, 10, -10, 0] }}
                         transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
                       >
-                        {item.emoji}
+                        {item.icon?.endsWith('.svg') ? (
+                          <img
+                            src={item.icon}
+                            alt={`${item.label} icon`}
+                            className="w-5 h-5 opacity-90"
+                          />
+                        ) : (
+                          <span className="text-lg">{String(item.icon ?? '')}</span>
+                        )}
                       </motion.span>
                       <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                         {item.label}
@@ -218,12 +226,13 @@ export default function EnhancedNavbar3D() {
                   {/* Content */}
                   <div className="relative flex items-center gap-2 text-white font-bold text-sm">
                     <span className="hidden sm:inline">Dashboard</span>
-                    <motion.span
+                    <motion.img
+                      src="/icons/torii.svg"
+                      alt="Torii"
+                      className="w-4 h-4 opacity-90"
                       animate={{ rotate: [0, 15, -15, 0] }}
                       transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                    >
-                      ⛩️
-                    </motion.span>
+                    />
                   </div>
                 </motion.div>
               </Link>
@@ -270,7 +279,15 @@ export default function EnhancedNavbar3D() {
                   className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 hover:from-red-100 hover:to-orange-100 dark:hover:from-red-900/50 dark:hover:to-orange-900/50 transition-colors"
                   whileTap={{ scale: 0.95 }}
                 >
-                  <span className="text-2xl">{item.emoji}</span>
+                  {item.icon?.endsWith('.svg') ? (
+                    <img
+                      src={item.icon}
+                      alt={`${item.label} icon`}
+                      className="w-6 h-6 opacity-90"
+                    />
+                  ) : (
+                    <span className="text-2xl">{String(item.icon ?? '')}</span>
+                  )}
                   <span className="flex-1 font-bold text-gray-900 dark:text-white">
                     {item.label}
                   </span>

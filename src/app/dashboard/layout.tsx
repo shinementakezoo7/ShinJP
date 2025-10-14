@@ -223,76 +223,94 @@ function SidebarContent({
         </div>
 
         {/* Enhanced User Card */}
-        <div className="mb-6 p-5 japanese-card sakura-pattern animate-fade-in relative overflow-hidden">
+        <div className="mb-6 p-5 relative overflow-hidden">
+          {/* Glass morphism background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50" />
+
+          {/* Animated background gradient */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-2xl animate-pulse-slow" />
+
           {/* Decorative Background */}
-          <div className="absolute top-0 right-0 text-6xl japanese-text opacity-5 select-none pointer-events-none">
+          <div className="absolute top-0 right-0 text-6xl japanese-text opacity-5 select-none pointer-events-none animate-float">
             学
           </div>
 
           <div className="relative z-10">
             {/* User Info */}
             <div className="flex items-center gap-3 mb-5">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-2xl traditional-gradient flex items-center justify-center shadow-lg ring-4 ring-white/20">
+              <div className="relative group">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center shadow-xl ring-4 ring-white/20 dark:ring-black/20 transform group-hover:scale-110 transition-all duration-300">
                   <span className="text-white text-2xl font-bold japanese-text">
                     {user.name.charAt(0)}
                   </span>
                 </div>
-                {/* Online indicator */}
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-3 border-white dark:border-gray-800 shadow-lg"></div>
+                {/* Online indicator with pulse */}
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-3 border-white dark:border-gray-800 shadow-lg">
+                  <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75" />
+                </div>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-base font-bold japanese-heading truncate">{user.name}</p>
+                <p className="text-base font-bold japanese-heading truncate text-gray-900 dark:text-white">
+                  {user.name}
+                </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
               </div>
             </div>
 
-            {/* Stats Grid */}
+            {/* Stats Grid with hover effects */}
             <div className="grid grid-cols-2 gap-2 mb-4">
-              <div className="p-3 zen-simplicity rounded-xl text-center transform hover:scale-105 transition-transform cursor-pointer">
-                <div className="text-2xl font-black stat-value bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <div className="p-3 bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl text-center transform hover:scale-105 transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg group">
+                <div className="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform">
                   {user.level}
                 </div>
                 <div className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1">Level</div>
               </div>
-              <div className="p-3 zen-simplicity rounded-xl text-center transform hover:scale-105 transition-transform cursor-pointer">
-                <div className="text-2xl font-black stat-value">{user.streak}🔥</div>
+              <div className="p-3 bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl text-center transform hover:scale-105 transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg group">
+                <div className="text-2xl font-black group-hover:scale-110 transition-transform">
+                  <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                    {user.streak}
+                  </span>
+                  <span>🔥</span>
+                </div>
                 <div className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1">
                   Streak
                 </div>
               </div>
             </div>
 
-            {/* XP Progress Bar */}
+            {/* XP Progress Bar with gradient */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs font-bold">
                 <span className="text-gray-700 dark:text-gray-300">XP Progress</span>
-                <span className="text-indigo-600 dark:text-indigo-400">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   {user.totalXP} / {user.nextLevelXP}
                 </span>
               </div>
               <div className="relative w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden shadow-inner">
                 <div
-                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-500 shadow-md"
+                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-500 shadow-md relative overflow-hidden"
                   style={{ width: `${xpProgress}%` }}
-                ></div>
+                >
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+                </div>
               </div>
             </div>
 
-            {/* Quick Stats */}
+            {/* Quick Stats with divider */}
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="text-center flex-1">
-                <div className="text-lg font-black text-gray-800 dark:text-gray-200">
+              <div className="text-center flex-1 group cursor-pointer">
+                <div className="text-lg font-black text-gray-800 dark:text-gray-200 group-hover:scale-110 transition-transform">
                   {user.completedLessons}
                 </div>
-                <div className="text-xs font-medium text-gray-500">Lessons</div>
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Lessons</div>
               </div>
-              <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
-              <div className="text-center flex-1">
-                <div className="text-lg font-black text-gray-800 dark:text-gray-200">
+              <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-300 dark:via-gray-600 to-transparent"></div>
+              <div className="text-center flex-1 group cursor-pointer">
+                <div className="text-lg font-black text-gray-800 dark:text-gray-200 group-hover:scale-110 transition-transform">
                   {user.achievements}
                 </div>
-                <div className="text-xs font-medium text-gray-500">Badges</div>
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Badges</div>
               </div>
             </div>
           </div>
@@ -312,30 +330,43 @@ function SidebarContent({
                   href={item.href}
                   onClick={onClose}
                   className={`
-                    group flex items-center gap-3 px-3 py-3 rounded-xl font-semibold transition-all duration-200
+                    group flex items-center gap-3 px-3 py-3 rounded-xl font-semibold transition-all duration-200 relative overflow-hidden
                     ${
                       isActive
-                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30 scale-[1.02]'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:scale-[1.01]'
+                        ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white shadow-lg shadow-blue-500/30 scale-[1.02]'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 hover:scale-[1.01]'
                     }
                   `}
                 >
+                  {/* Background shimmer effect on hover */}
+                  {!isActive && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                  )}
+
                   <div
                     className={`
-                    flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xl transition-all duration-200
+                    flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xl transition-all duration-200 relative z-10
                     ${
                       isActive
                         ? 'bg-white/20 shadow-inner'
-                        : 'bg-gray-100 dark:bg-gray-800 group-hover:scale-110 group-hover:-rotate-6'
+                        : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 group-hover:scale-110 group-hover:-rotate-6 shadow-md'
                     }
                   `}
                   >
                     {item.emoji}
                   </div>
-                  <span className="flex-1 text-sm">{item.name}</span>
+                  <span className="flex-1 text-sm relative z-10">{item.name}</span>
+
+                  {/* Notification Badge */}
+                  {['Lessons', 'Chat', 'Community'].includes(item.name) && !isActive && (
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center text-xs font-black text-white shadow-lg animate-pulse relative z-10">
+                      {item.name === 'Lessons' ? '3' : item.name === 'Chat' ? '5' : '2'}
+                    </div>
+                  )}
+
                   {isActive && (
                     <svg
-                      className="w-5 h-5 animate-pulse"
+                      className="w-5 h-5 animate-pulse flex-shrink-0 relative z-10"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"

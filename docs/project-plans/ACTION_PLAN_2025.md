@@ -575,6 +575,6 @@ Your stack is **95% excellent**! These enhancements will take you to **100%**:
 ---
 
 **Questions? Check:**
-- [TECH_STACK_2025_RESEARCH.md](./TECH_STACK_2025_RESEARCH.md) - Full details
+- [TECH_STACK_2025_RESEARCH.md](../tech-stack/TECH_STACK_2025_RESEARCH.md) - Full details
 - [DEEP_DIVE_ENHANCEMENT_PLAN.md](./DEEP_DIVE_ENHANCEMENT_PLAN.md) - Complete roadmap
-- [UPGRADE_ANALYSIS.md](./UPGRADE_ANALYSIS.MD) - Original upgrade analysis
+- [UPGRADE_ANALYSIS.md](./UPGRADE_ANALYSIS.md) - Original upgrade analysis

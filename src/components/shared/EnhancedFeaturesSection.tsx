@@ -6,7 +6,7 @@ import { FeatureCard3D } from './Animated3DCard'
 export default function EnhancedFeaturesSection() {
   const features = [
     {
-      icon: '🤖',
+      icon: '/icons/chip.svg',
       title: 'AI Powered Learning',
       titleKanji: 'AI',
       description:
@@ -15,7 +15,7 @@ export default function EnhancedFeaturesSection() {
       gradient: 'from-red-500 to-pink-600 dark:from-red-400 dark:to-pink-500',
     },
     {
-      icon: '🔄',
+      icon: '/icons/repeat.svg',
       title: 'Spaced Repetition',
       titleKanji: '反復',
       description:
@@ -24,7 +24,7 @@ export default function EnhancedFeaturesSection() {
       gradient: 'from-amber-500 to-orange-600 dark:from-amber-400 dark:to-orange-500',
     },
     {
-      icon: '🎮',
+      icon: '/icons/gamepad.svg',
       title: 'Immersive Practice',
       titleKanji: '没入',
       description:
@@ -70,14 +70,14 @@ export default function EnhancedFeaturesSection() {
 
       {/* Decorative Torii Gate */}
       <motion.div
-        className="absolute top-10 right-10 text-8xl opacity-5 dark:opacity-10 pointer-events-none"
+        className="absolute top-10 right-10 opacity-5 dark:opacity-10 pointer-events-none"
         animate={{
           rotate: [0, 5, -5, 0],
           scale: [1, 1.05, 1],
         }}
         transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY }}
       >
-        ⛩️
+        <img src="/icons/torii.svg" alt="Torii" className="w-20 h-20" />
       </motion.div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -131,16 +131,16 @@ export default function EnhancedFeaturesSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             />
-            <motion.span
-              className="text-3xl"
+            <motion.img
+              src="/icons/sakura.svg"
+              alt="Sakura"
+              className="w-8 h-8"
               animate={{
                 rotate: [0, 360],
                 scale: [1, 1.2, 1],
               }}
               transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY }}
-            >
-              🌸
-            </motion.span>
+            />
             <motion.div
               className="h-px w-24 bg-gradient-to-r from-transparent via-red-600 to-transparent"
               initial={{ scaleX: 0 }}
@@ -190,13 +190,13 @@ export default function EnhancedFeaturesSection() {
             className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white/50 dark:bg-black/30 backdrop-blur-xl border-2 border-red-800/20 dark:border-red-400/20 shadow-xl"
             whileHover={{ scale: 1.05 }}
           >
-            <motion.span
+            <motion.img
+              src="/icons/target.svg"
+              alt="Target"
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
-              className="text-2xl"
-            >
-              🎯
-            </motion.span>
+              className="w-6 h-6"
+            />
             <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
               Start your journey from <span className="text-red-600 dark:text-red-400">N5</span> to{' '}
               <span className="text-red-600 dark:text-red-400">N1</span>

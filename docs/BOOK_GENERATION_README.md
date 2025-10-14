@@ -380,7 +380,7 @@ npm run generate-test-book -- --sector caregiving --chapters 5
 ## 📚 Related Documentation
 
 - [Complete Implementation Plan](./BOOK_GENERATION_SYSTEM_PLAN.md)
-- [API Reference](./API_REFERENCE.md)
+- API Reference (coming soon)
 - [SSW Research Database](../SSW_BOOKS/SSW_COMPLETE_RESEARCH_DATABASE_360_SOURCES.md)
 - [Database Schema](../database/migrations/015_book_generation_system.sql)
 

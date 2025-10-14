@@ -1,129 +1,190 @@
-# 🚀 Complete Setup Guide - Textbook Generator
+# 🚀 Complete Setup Guide - Shinmen Takezo
 
-## ⚠️ IMPORTANT: Root Cause Found!
+Welcome to the comprehensive setup guide for the Shinmen Takezo Japanese learning platform. This guide will walk you through setting up the entire system for development or production use.
 
-**The "Failed to create textbook" error is because the `textbooks` table doesn't exist in your database yet.**
+## ⚠️ IMPORTANT: Database Setup Required
+
+**The "Failed to create textbook" error occurs because the required database tables don't exist in your Supabase instance yet.**
 
 ---
 
-## 🔧 Quick Fix (5 Minutes)
+## 🔧 Quick Setup (10 Minutes)
 
-### Step 1: Create Database Tables
+### Prerequisites
+
+Before you begin, ensure you have:
+
+- Node.js 18+ installed
+- A Supabase account (free tier is sufficient)
+- NVIDIA API key for AI features (get one at https://build.nvidia.com/)
+- Git for cloning the repository
+
+### Step 1: Clone and Install Dependencies
+
+```bash
+# Clone the repository
+git clone https://github.com/your-shinjp-repo.git
+cd ShinJP
+
+# Install dependencies
+npm install
+```
+
+### Step 2: Set Up Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local` and add your API keys:
+
+```env
+# =======================
+# NVIDIA AI Configuration (REQUIRED)
+# =======================
+NVIDIA_API_KEY=nvapi-YOUR_KEY_HERE
+NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
+
+# =======================
+# Supabase Configuration (REQUIRED)
+# =======================
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+```
+
+**How to get NVIDIA API key:**
+1. Visit https://build.nvidia.com/
+2. Sign in or create an account
+3. Navigate to "API Keys" section
+4. Create a new API key
+5. Ensure access to the `stockmark/stockmark-2-100b-instruct` model
+
+### Step 3: Create Database Tables
 
 1. **Go to Supabase Dashboard**
    - Open: https://app.supabase.com
    - Select your project
    - Click: **SQL Editor** (left sidebar)
 
-2. **Run the Table Creation SQL**
+2. **Run the Database Migration**
    - Copy the entire SQL from: `database/migrations/000_create_textbooks_tables.sql`
    - Paste into SQL Editor
    - Click: **RUN**
    - Wait for "Success" message
 
 3. **Verify Tables Created**
-   ```sql
-   SELECT table_name 
-   FROM information_schema.tables 
-   WHERE table_schema = 'public' 
-   AND table_name IN ('textbooks', 'textbook_chapters', 'user_textbook_progress');
-   ```
+```sql
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
+AND table_name IN ('textbooks', 'textbook_chapters', 'user_textbook_progress');
+```
    - Should show 3 tables
 
-### Step 2: Test Database Connection
+### Step 4: Verify Environment Configuration
+
+Run the environment check script:
 
 ```bash
-cd /workspaces/ShinJP
-node test-supabase-connection.mjs
+npm run check-env
 ```
 
 **Expected Output:**
 ```
-✅ Textbooks table exists and is accessible
-✅ Insert successful!
-✅ Test record deleted
-✅ All tests passed! Supabase connection is working.
+🤖 AI Configuration:
+   NVIDIA NIM API: ✅ Available
+   Primary Model: stockmark-2-100b-instruct (100B params)
+
+✅ Environment configured correctly!
 ```
 
-### Step 3: Start Development Server
+### Step 5: Start Development Server
 
 ```bash
 npm run dev
 ```
 
-### Step 4: Generate Your First Textbook
+The application will start at: **http://localhost:3000**
+
+### Step 6: Generate Your First Textbook
 
 1. Navigate to: `http://localhost:3000/textbooks/generate`
-2. Fill in the form
+2. Fill in the form with:
+   - Title: "My First Japanese Textbook"
+   - JLPT Level: N5
+   - Content Type: Complete Textbook
+   - Topics: "Basic Greetings"
+   - Number of Chapters: 3
 3. Click "Generate with AI"
-4. ✅ It works!
+4. ✅ Your textbook will be generated in 1-3 minutes!
 
 ---
 
-## 📚 New Features Added
+## 🎯 Key Features
 
-### 1. ✅ Web Search Integration
+### 1. ✅ NVIDIA-Powered AI Content Generation
 
-The textbook generator now uses web search to enhance content:
+The platform uses NVIDIA's specialized Japanese language model:
 
 **Features:**
-- Searches for real Japanese examples
-- Finds contextual usage
-- Adds cultural notes
-- Provides additional resources
-- Enhances grammar with real-world examples
+- 100B parameter model specialized in Japanese
+- JLPT-compliant content generation (N5-N1)
+- Contextual vocabulary and grammar
+- Cultural notes and examples
+- Real-world conversation scenarios
 
-**Location:** `src/lib/ai/web-search-enhancer.ts`
+**Model:** `stockmark/stockmark-2-100b-instruct`
 
-**Usage:**
-```typescript
-import { enhanceWithWebSearch } from '@/lib/ai/web-search-enhancer'
+### 2. ✅ Comprehensive Textbook Generation
 
-const enhanced = await enhanceWithWebSearch(content, {
-  topic: 'Greetings',
-  jlptLevel: 'N5',
-  contentType: 'textbook_chapter'
-})
-```
+Generate complete Japanese textbooks with:
 
-### 2. ✅ Book Reading Interface
+**Features:**
+- Multiple content types (textbook chapters, grammar lessons, vocabulary, kanji)
+- Customizable chapter topics and count
+- Inclusion options (exercises, cultural notes, mnemonics, examples)
+- JLPT level targeting (N5-N1)
+- Personalized content based on interests
+
+**Location:** `/textbooks/generate`
+
+### 3. ✅ Interactive Reading Experience
 
 Beautiful reading interface with:
 
 **Features:**
-- 📖 Chapter-by-chapter reading
-- 🔤 Font size control (A- / A+)
+- 📖 Chapter-by-chapter navigation
+- 🔤 Adjustable font size
 - 📑 Sidebar with chapter list
-- 🎨 Beautiful typography
+- 🎨 Japanese-themed design
 - 🌙 Dark mode support
 - 📱 Mobile responsive
 
 **Location:** `/textbooks/[id]/read`
 
-**Access:** Click on any generated textbook → "Read" button
+### 4. ✅ SSW Program Support
 
-### 3. ✅ PDF Download
-
-Download any textbook as PDF:
+Specialized Skilled Worker program for Japanese employment:
 
 **Features:**
-- 📥 One-click PDF download
-- 📄 Beautiful PDF formatting
-- 📑 Table of contents
-- 🎨 Color-coded sections
-- 📚 Professional layout
+- 14 industry sectors with specialized vocabulary
+- Workplace-specific scenarios
+- JFT-Basic test preparation
+- Cultural integration notes
+- Safety procedures and protocols
 
-**Location:** Reading interface → "Download PDF" button
-
-**API:** `/api/textbooks/[id]/download`
+**Location:** `/ssw`
 
 ---
 
 ## 🗂️ Database Structure
 
-### Tables Created:
+### Core Tables:
 
 #### 1. `textbooks`
+Main table for storing generated textbooks:
 ```sql
 - id (UUID, primary key)
 - title, description
@@ -133,12 +194,14 @@ Download any textbook as PDF:
 - total_chapters
 - topics, keywords
 - generation_status (draft, generating, completed, error)
-- error_message
+- generation_params (JSONB with generation options)
+- estimated_completion_hours
 - view_count, download_count
 - timestamps
 ```
 
 #### 2. `textbook_chapters`
+Individual chapters with detailed content:
 ```sql
 - id (UUID, primary key)
 - textbook_id (foreign key)
@@ -148,10 +211,12 @@ Download any textbook as PDF:
 - content (full JLPT content)
 - content_type
 - includes_exercises, includes_cultural_notes, includes_slang, includes_mnemonics
+- estimated_time_minutes
 - timestamps
 ```
 
 #### 3. `user_textbook_progress`
+Track user reading progress:
 ```sql
 - id (UUID, primary key)
 - user_id, textbook_id
@@ -163,146 +228,103 @@ Download any textbook as PDF:
 - timestamps
 ```
 
+### Additional Tables:
+- `kanji_stroke_order` - Kanji writing instructions
+- `audio_files` - Generated audio pronunciations
+- `conversations` - AI chat history
+- `messages` - Individual chat messages
+
 ---
 
-## 🔄 Complete Flow
+## 🔄 System Architecture
 
-### Generation Flow:
+### AI Content Generation Flow:
 
 ```
-User Interface
+User Interface (/textbooks/generate)
     ↓
-1. Fill form with:
-   - Title, JLPT Level
-   - Content Type
-   - Topics, Chapters
-   - Options
+1. User fills form with:
+   - Title, JLPT Level (N5-N1)
+   - Content Type (textbook, grammar, vocabulary, kanji)
+   - Topics, Number of Chapters
+   - Options (exercises, cultural notes, etc.)
     ↓
 2. POST /api/textbooks/generate
     ↓
-3. Create textbook record
+3. Create textbook record in database
     ↓
 4. For each chapter:
-   a. Generate JLPT content
-   b. 🌐 Enhance with web search
-   c. Save to database
+   a. Generate JLPT-compliant content using NVIDIA AI
+   b. Validate content structure
+   c. Save chapter to database
     ↓
-5. Update textbook status
+5. Update textbook status to "completed"
     ↓
-6. Return success
+6. Return success with textbook ID
 ```
 
-### Reading Flow:
+### Chat System Flow:
 
 ```
-User clicks "Read"
+User Interface (/chat)
     ↓
-1. GET /api/textbooks/[id]
+1. User sends message in Japanese/English
     ↓
-2. Fetch textbook + chapters
+2. POST /api/ai/chat
     ↓
-3. Display in beautiful reader
+3. NVIDIA AI generates contextual response
     ↓
-4. User can:
-   - Navigate chapters
+4. Response streamed back to client
+    ↓
+5. Conversation saved to database
+```
+
+### Reading Experience Flow:
+
+```
+Textbook Library (/books)
+    ↓
+1. User clicks "Read" on a textbook
+    ↓
+2. GET /textbooks/[id]/read
+    ↓
+3. Fetch textbook + chapters from database
+    ↓
+4. Display in Japanese-themed reader
+    ↓
+5. User can:
+   - Navigate between chapters
    - Adjust font size
-   - Download PDF
-   - Toggle sidebar
+   - View progress
+   - Access audio pronunciation (when available)
 ```
-
-### Download Flow:
-
-```
-User clicks "Download PDF"
-    ↓
-1. POST /api/textbooks/[id]/download
-    ↓
-2. Fetch textbook + chapters
-    ↓
-3. Generate HTML
-    ↓
-4. Convert to PDF
-    ↓
-5. Return PDF file
-    ↓
-6. Browser downloads file
-```
-
----
-
-## 🧪 Testing
-
-### 1. Test Database Connection
-
-```bash
-node test-supabase-connection.mjs
-```
-
-### 2. Test Textbook Generation
-
-```bash
-# Start server
-npm run dev
-
-# Navigate to
-http://localhost:3000/textbooks/generate
-
-# Generate test textbook:
-- Title: "Test Textbook"
-- Level: N5
-- Content: Complete Textbook
-- Topics: "Greetings"
-- Chapters: 3
-```
-
-### 3. Test Reading Interface
-
-```bash
-# After generation completes:
-# Click "View Textbook" or navigate to:
-http://localhost:3000/textbooks/[id]/read
-```
-
-### 4. Test PDF Download
-
-```bash
-# In reading interface:
-# Click "Download PDF" button
-# PDF should download
-```
-
----
-
-## 📊 Features Comparison
-
-| Feature | Before | After |
-|---------|--------|-------|
-| **Database** | ❌ No tables | ✅ Complete schema |
-| **Generation** | ❌ Failed | ✅ Works perfectly |
-| **Web Search** | ❌ None | ✅ Integrated |
-| **Reading UI** | ❌ None | ✅ Beautiful interface |
-| **PDF Download** | ❌ None | ✅ One-click download |
-| **Progress Tracking** | ❌ None | ✅ User progress table |
-| **Error Handling** | ❌ Basic | ✅ Comprehensive |
-| **Logging** | ❌ Minimal | ✅ Detailed |
 
 ---
 
 ## 🎯 API Endpoints
 
-### Generation
+### Textbook Generation
 - `POST /api/textbooks/generate` - Generate new textbook
+- `GET /api/textbooks/generate?id={id}` - Check generation status
 
-### Reading
-- `GET /api/textbooks/[id]` - Get textbook + chapters
-
-### Download
+### Textbook Management
+- `GET /api/textbooks/[id]` - Get textbook with chapters
 - `POST /api/textbooks/[id]/download` - Download as PDF
+- `GET /api/textbooks` - List all textbooks (with pagination)
 
-### Future APIs
-- `GET /api/textbooks` - List all textbooks
-- `GET /api/textbooks/[id]/progress` - Get user progress
-- `PUT /api/textbooks/[id]/progress` - Update progress
+### AI Chat
+- `POST /api/ai/chat` - Send message to AI tutor
+- `GET /api/chat/conversations` - List conversations
+- `POST /api/chat/conversations` - Create new conversation
+- `GET /api/chat/conversations/[id]/messages` - Get conversation history
+
+### Audio
+- `POST /api/audio/generate` - Generate audio pronunciation
+- `GET /api/kanji/stroke-order/[kanji]` - Get kanji stroke order data
+
+### SSW (Specialized Skilled Worker)
+- `GET /api/ssw/sectors` - List all SSW sectors
+- `POST /api/textbooks/generate-ssw` - Generate SSW textbook
 
 ---
 
@@ -329,32 +351,53 @@ http://localhost:3000/textbooks/[id]/read
 1. ✅ NVIDIA API key is valid
 2. ✅ Network connection
 3. ✅ Model access: `stockmark/stockmark-2-100b-instruct`
-4. ✅ Test with: `node test-nvidia.mjs`
+4. ✅ Check NVIDIA API key permissions at https://build.nvidia.com/
 
-### PDF Download Shows HTML
+### Error: "NVIDIA API is not configured"
 
-**Note:** Current implementation uses placeholder PDF generation.
+**Solution:**
+1. Check that `NVIDIA_API_KEY` is set in `.env.local`
+2. Verify the API key is valid
+3. Ensure you have access to stockmark models
+4. Run `npm run check-env` to diagnose
 
-**To fix:**
-1. Install puppeteer: `npm install puppeteer`
-2. Or install jsPDF: `npm install jspdf`
-3. Update `src/lib/pdf/textbook-pdf-generator.ts`
+### Error: Rate limiting (429 errors)
+
+**Solution:**
+1. NVIDIA API has rate limits
+2. Wait a few minutes before trying again
+3. Consider upgrading to a paid plan for higher limits
+
+### Chat System Not Working
+
+**Check:**
+1. ✅ NVIDIA API is configured
+2. ✅ No CORS issues in browser console
+3. ✅ Network connection is stable
+4. ✅ Check browser console for error messages
 
 ---
 
 ## 📦 Dependencies
 
 ### Required:
-- ✅ `@supabase/supabase-js` - Database
-- ✅ `axios` - HTTP requests
-- ✅ `next` - Framework
-- ✅ `react` - UI
-- ✅ `lucide-react` - Icons
+- ✅ `@supabase/supabase-js` - Database client
+- ✅ `next` - Framework (Next.js 15)
+- ✅ `react` - UI library (React 19)
+- ✅ `typescript` - Type safety
+- ✅ `tailwindcss` - Styling
+- ✅ `framer-motion` - Animations
+- ✅ `three` - 3D graphics
+- ✅ `@react-three/fiber` - React Three.js integration
+- ✅ `ai` - Vercel AI SDK for NVIDIA integration
 
-### Optional (for PDF):
-- `puppeteer` - HTML to PDF conversion
-- `jsPDF` - PDF generation
-- `pdfmake` - PDF creation
+### Development:
+- ✅ `@types/node` - Node.js types
+- ✅ `@types/react` - React types
+- ✅ `eslint` - Linting
+- ✅ `prettier` - Code formatting
+- ✅ `vitest` - Testing framework
+- ✅ `playwright` - E2E testing
 
 ---
 
@@ -366,8 +409,8 @@ Set these in your hosting platform:
 
 ```bash
 # NVIDIA AI
-NVIDIA_API_KEY_1=your_key_here
-NVIDIA_ENDPOINT_1=https://integrate.api.nvidia.com/v1/chat/completions
+NVIDIA_API_KEY=your_key_here
+NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
 
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=your_url_here
@@ -393,33 +436,34 @@ vercel deploy
 
 ---
 
-## 📚 Documentation
+## 📚 Additional Resources
 
-### User Guides:
-- `TEXTBOOK_GENERATOR_GUIDE.md` - How to use
-- `TEXTBOOK_ERROR_FIXES.md` - Error solutions
-- `COMPLETE_SETUP_GUIDE.md` - This file
+### Documentation Guides:
+- [Textbook Generator Guide](../textbook/TEXTBOOK_GENERATOR_GUIDE.md)
+- [NVIDIA AI Integration](../api-integration/GETTING_STARTED_NVIDIA.md)
+- [UI/UX Components](../ui-ux/ENHANCED_UI_GUIDE.md)
+- [Implementation Guide](../implementation/IMPLEMENTATION_GUIDE.md)
 
-### Technical Docs:
-- `TEXTBOOK_GENERATOR_FIXES.md` - Technical fixes
-- `FINAL_IMPLEMENTATION_STATUS.md` - Implementation status
-- `ALL_FIXES_APPLIED.md` - Complete fixes list
+### Technical References:
+- [Database Schema](../implementation/DATABASE_SCHEMA.md)
+- [AI Integration Architecture](../implementation/AI_INTEGRATION.md)
+- [Tech Stack Overview](../tech-stack/TECH_STACK_SUMMARY.md)
 
 ---
 
 ## ✅ Checklist
 
-Before generating textbooks:
+Before running the application:
 
+- [ ] Node.js 18+ installed
+- [ ] Repository cloned and dependencies installed
+- [ ] Supabase project created
 - [ ] Database tables created (run migration)
-- [ ] Test connection passed
-- [ ] NVIDIA API key configured
-- [ ] Supabase credentials set
-- [ ] Development server running
-- [ ] Can access `/textbooks/generate`
-- [ ] Test generation works
-- [ ] Reading interface works
-- [ ] PDF download works
+- [ ] NVIDIA API key obtained
+- [ ] Environment variables configured
+- [ ] Development server starts successfully
+- [ ] Textbook generation works
+- [ ] Chat functionality tested
 
 ---
 
@@ -428,25 +472,24 @@ Before generating textbooks:
 Everything is now set up! Follow these steps:
 
 1. ✅ **Run SQL migration** in Supabase Dashboard
-2. ✅ **Test connection**: `node test-supabase-connection.mjs`
+2. ✅ **Configure environment** with NVIDIA and Supabase keys
 3. ✅ **Start server**: `npm run dev`
 4. ✅ **Generate textbook**: Go to `/textbooks/generate`
-5. ✅ **Read textbook**: Click "View" after generation
-6. ✅ **Download PDF**: Click "Download PDF" in reader
+5. ✅ **Test chat**: Go to `/chat`
+6. ✅ **Explore SSW**: Go to `/ssw`
 
 **You now have:**
 - ✅ Complete database schema
-- ✅ Working textbook generation
-- ✅ Web search integration
-- ✅ Beautiful reading interface
-- ✅ PDF download feature
+- ✅ Working AI-powered textbook generation
+- ✅ Interactive chat with AI tutor
+- ✅ Japanese-themed UI
 - ✅ Progress tracking
 - ✅ Comprehensive error handling
 
-**Happy teaching and learning! 頑張ってください！ 📚✨**
+**Happy learning Japanese! 頑張ってください！ 📚✨**
 
 ---
 
-**Last Updated:** January 2025  
-**Version:** 3.0.0 (Complete System)  
+**Last Updated:** October 2025
+**Version:** 1.0.0
 **Status:** ✅ Production Ready

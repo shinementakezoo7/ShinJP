@@ -163,14 +163,16 @@ export default function ChatPageRedesigned() {
 
     await saveMessage(userMessage)
 
-    const typingMessage: Message = {
-      id: 'typing',
+    // Create streaming message placeholder
+    const streamingMessageId = 'streaming-' + Date.now()
+    const streamingMessage: Message = {
+      id: streamingMessageId,
       role: 'assistant',
       content: '',
       timestamp: new Date(),
-      isTyping: true,
+      isTyping: false,
     }
-    setMessages((prev) => [...prev, typingMessage])
+    setMessages((prev) => [...prev, streamingMessage])
 
     try {
       const response = await fetch('/api/chat', {
@@ -182,6 +184,7 @@ export default function ChatPageRedesigned() {
             content: m.content,
           })),
           temperature: 0.7,
+          stream: true,
         }),
       })
 
@@ -189,18 +192,58 @@ export default function ChatPageRedesigned() {
         throw new Error(`Server error ${response.status}`)
       }
 
-      const data = await response.json()
+      // Handle streaming response
+      if (response.body) {
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let fullContent = ''
+        let done = false
 
-      const aiResponse: Message = {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: typeof data.message === 'string' ? data.message : String(data.message),
-        timestamp: new Date(),
+        while (!done) {
+          const { value, done: readerDone } = await reader.read()
+          done = readerDone
+
+          if (value) {
+            const chunk = decoder.decode(value)
+            const lines = chunk.split('\n')
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6))
+
+                  if (data.type === 'content') {
+                    fullContent = data.content
+                    // Update streaming message
+                    setMessages((prev) =>
+                      prev.map((m) =>
+                        m.id === streamingMessageId ? { ...m, content: fullContent } : m
+                      )
+                    )
+                  } else if (data.type === 'done') {
+                    // Save final message
+                    const finalMessage: Message = {
+                      id: Date.now().toString(),
+                      role: 'assistant',
+                      content: fullContent,
+                      timestamp: new Date(),
+                    }
+                    await saveMessage(finalMessage)
+                    setIsLoading(false)
+                  } else if (data.type === 'error') {
+                    throw new Error(data.error)
+                  }
+                } catch (e) {
+                  // Ignore JSON parse errors for incomplete chunks
+                  console.debug('Chunk parse error:', e)
+                }
+              }
+            }
+          }
+        }
+      } else {
+        throw new Error('No response body')
       }
-
-      setMessages((prev) => prev.filter((m) => m.id !== 'typing').concat(aiResponse))
-      await saveMessage(aiResponse)
-      setIsLoading(false)
     } catch (error) {
       console.error('Error sending message:', error)
 
@@ -211,7 +254,7 @@ export default function ChatPageRedesigned() {
         timestamp: new Date(),
       }
 
-      setMessages((prev) => prev.filter((m) => m.id !== 'typing').concat(errorMessage))
+      setMessages((prev) => prev.filter((m) => m.id !== streamingMessageId).concat(errorMessage))
       setIsLoading(false)
     }
   }

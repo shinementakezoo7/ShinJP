@@ -348,7 +348,7 @@ The upgrade is safe to deploy to production. The existing TypeScript errors are 
 ## 📚 Reference Documents
 
 - [UPGRADE_ANALYSIS.md](./UPGRADE_ANALYSIS.md) - Detailed analysis
-- [package.json](./package.json) - Updated dependencies
+- [package.json](../../package.json) - Updated dependencies
 - [Next.js 15 Docs](https://nextjs.org/docs) - Route handler changes
 - [React 19 Changelog](https://react.dev) - New features
 - [Supabase Changelog](https://github.com/supabase/supabase-js/releases) - Updates

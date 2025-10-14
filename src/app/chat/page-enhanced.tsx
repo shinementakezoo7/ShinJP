@@ -35,7 +35,7 @@ export default function EnhancedChatPage() {
         role: 'assistant',
         content: `こんにちは! Welcome to your Japanese learning journey! 🌸
 
-I'm Sensei Sakura, your AI-powered Japanese instructor. I'm here to guide you through every aspect of the Japanese language with patience and expertise.
+I&apos;m Sensei Sakura, your AI-powered Japanese instructor. I&apos;m here to guide you through every aspect of the Japanese language with patience and expertise.
 
 **What I can help you with:**
 • **Grammar (文法)** - From particles to complex sentence structures
@@ -114,7 +114,7 @@ How can I assist you today? 頑張りましょう！(Let's do our best!)`,
       const errorMessage: Message = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: "ごめんなさい (I'm sorry), I encountered an error. Please try again.",
+        content: 'ごめんなさい (I&apos;m sorry), I encountered an error. Please try again.',
         timestamp: new Date(),
       }
 

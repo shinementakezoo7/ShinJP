@@ -184,11 +184,15 @@ export function FeatureCard3D({
             style={{ transformStyle: 'preserve-3d' }}
           >
             <motion.span
-              className="text-4xl"
+              className="block"
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
             >
-              {icon}
+              {icon.endsWith('.svg') ? (
+                <img src={icon} alt="feature icon" className="w-10 h-10 opacity-90" />
+              ) : (
+                <span className="text-4xl">{icon}</span>
+              )}
             </motion.span>
           </motion.div>
         </div>
@@ -207,14 +211,14 @@ export function FeatureCard3D({
 
         {/* Decorative element */}
         <motion.div
-          className="absolute -bottom-2 -right-2 text-3xl opacity-20"
+          className="absolute -bottom-2 -right-2 opacity-20"
           animate={{
             rotate: [12, 0, 12],
             scale: [1, 1.1, 1],
           }}
           transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
         >
-          🌸
+          <img src="/icons/sakura.svg" alt="Sakura" className="w-6 h-6" />
         </motion.div>
       </Animated3DCard>
     </motion.div>

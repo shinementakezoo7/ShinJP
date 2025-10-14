@@ -181,7 +181,7 @@ None related to OpenAI removal. The platform is ready to use with NVIDIA.
 
 - [NVIDIA NIM Documentation](https://docs.nvidia.com/nim/)
 - [stockmark-2-100b-instruct Model Card](https://huggingface.co/stockmark/Stockmark-2-100B-Instruct)
-- [Implementation Summary](/workspaces/ShinJP/IMPLEMENTATION_SUMMARY.md)
+- [Implementation Summary](../implementation/IMPLEMENTATION_SUMMARY.md)
 
 ---
 

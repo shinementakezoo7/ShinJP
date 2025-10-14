@@ -310,7 +310,7 @@ Now that NVIDIA is configured, proceed with Phase 2:
 ### 1. Set Up Database
 ```bash
 # Follow database setup guide
-# See: IMPLEMENTATION_SUMMARY.md
+# See: ../implementation/IMPLEMENTATION_SUMMARY.md
 ```
 
 ### 2. Build Textbook Generator UI
@@ -332,7 +332,7 @@ Now that NVIDIA is configured, proceed with Phase 2:
 
 ## Resources 📚
 
-- [IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md) - Complete implementation plan
+- [IMPLEMENTATION_SUMMARY.md](../implementation/IMPLEMENTATION_SUMMARY.md) - Complete implementation plan
 - [OPENAI_REMOVAL_COMPLETE.md](./OPENAI_REMOVAL_COMPLETE.md) - Changes made
 - [NVIDIA NIM Docs](https://docs.nvidia.com/nim/) - Official documentation
 - [stockmark Model Card](https://huggingface.co/stockmark/Stockmark-2-100B-Instruct) - Model details

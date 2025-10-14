@@ -1,8 +1,51 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import { SSW_SECTORS } from '@/lib/ssw/sectors-data'
+
 export default function SSWHero() {
+  const [mounted, setMounted] = useState(false)
+  const [currentSector, setCurrentSector] = useState(0)
+  const [hoveredSector, setHoveredSector] = useState<number | null>(null)
+
+  useEffect(() => {
+    setMounted(true)
+    const interval = setInterval(() => {
+      setCurrentSector((prev) => (prev + 1) % SSW_SECTORS.length)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const activeSector =
+    hoveredSector !== null ? SSW_SECTORS[hoveredSector] : SSW_SECTORS[currentSector]
+  const gradientClass = activeSector.color
+
   return (
-    <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-cyan-50 to-indigo-50 dark:from-gray-900 dark:via-blue-950 dark:to-indigo-950">
+    <section
+      className={`relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-to-br transition-all duration-1000 ${gradientClass.replace('from-', 'from-').replace('to-', 'to-')}/10 dark:from-gray-900 dark:via-blue-950 dark:to-indigo-950`}
+    >
+      {/* Dynamic Liquid Blobs - Sector Colored */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div
+          className="absolute w-[600px] h-[600px] rounded-full blur-3xl opacity-20 dark:opacity-15 transition-all duration-1000"
+          style={{
+            background: `radial-gradient(circle, ${activeSector.color.includes('pink') ? '#ec4899' : activeSector.color.includes('blue') ? '#3b82f6' : activeSector.color.includes('green') ? '#10b981' : activeSector.color.includes('orange') ? '#f97316' : '#6366f1'} 0%, transparent 70%)`,
+            top: '5%',
+            left: '5%',
+            animation: 'float 20s ease-in-out infinite',
+          }}
+        />
+        <div
+          className="absolute w-[500px] h-[500px] rounded-full blur-3xl opacity-20 dark:opacity-15 transition-all duration-1000"
+          style={{
+            background: `radial-gradient(circle, ${activeSector.color.includes('cyan') ? '#06b6d4' : activeSector.color.includes('amber') ? '#f59e0b' : activeSector.color.includes('purple') ? '#a855f7' : '#0ea5e9'} 0%, transparent 70%)`,
+            bottom: '10%',
+            right: '5%',
+            animation: 'float 25s ease-in-out infinite reverse',
+          }}
+        />
+      </div>
+
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 pointer-events-none">
         <svg
@@ -37,30 +80,39 @@ export default function SSWHero() {
         </svg>
       </div>
 
-      {/* Floating Icons */}
+      {/* Floating Sector Icons */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {['🏥', '🏗️', '🍜', '🌾', '⚙️', '✈️', '🏨', '🎣'].map((icon, i) => (
+        {SSW_SECTORS.slice(0, 8).map((sector, i) => (
           <div
-            key={i}
-            className="absolute animate-float-slow opacity-10 dark:opacity-20"
+            key={sector.id}
+            className="absolute animate-float-slow opacity-10 dark:opacity-20 transition-opacity duration-1000"
             style={{
               left: `${10 + i * 12}%`,
               top: `${20 + (i % 3) * 30}%`,
               animationDelay: `${i * 0.8}s`,
               fontSize: `${3 + (i % 3)}rem`,
+              opacity: currentSector === i ? 0.3 : 0.1,
             }}
           >
-            {icon}
+            {sector.icon}
           </div>
         ))}
       </div>
 
       {/* Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
-        {/* Main Title */}
+        {/* Main Title with Dynamic Sector Background */}
         <div className="mb-8 animate-fade-in">
           <div className="inline-block relative mb-4">
-            <div className="absolute inset-0 bg-blue-600/20 dark:bg-blue-400/20 blur-3xl rounded-full"></div>
+            {/* Animated Sector Icon */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-[10rem] opacity-5 transition-all duration-1000 animate-pulse">
+                {activeSector.icon}
+              </div>
+            </div>
+            <div
+              className={`absolute inset-0 bg-gradient-to-r ${activeSector.color} opacity-20 blur-3xl rounded-full transition-all duration-1000`}
+            ></div>
             <h1 className="relative text-6xl sm:text-7xl md:text-8xl font-black">
               <span className="japanese-text text-blue-600 dark:text-blue-400 drop-shadow-lg">
                 特
@@ -78,7 +130,9 @@ export default function SSWHero() {
           </div>
 
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4">
-            <span className="bg-gradient-to-r from-blue-600 via-cyan-600 to-indigo-600 dark:from-blue-400 dark:via-cyan-400 dark:to-indigo-400 bg-clip-text text-transparent">
+            <span
+              className={`bg-gradient-to-r ${activeSector.color} dark:${activeSector.color} bg-clip-text text-transparent transition-all duration-1000`}
+            >
               Specified Skilled Worker
             </span>
           </h2>
@@ -86,6 +140,19 @@ export default function SSWHero() {
           <p className="text-xl sm:text-2xl text-blue-600 dark:text-blue-400 font-semibold mb-2">
             SSW Program Training Hub
           </p>
+
+          {/* Dynamic Sector Display */}
+          <div className="mt-4 inline-flex items-center gap-3 px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-xl transition-all duration-500">
+            <span className="text-3xl">{activeSector.icon}</span>
+            <div className="text-left">
+              <div className="text-sm font-bold text-gray-900 dark:text-white">
+                {activeSector.name}
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 japanese-text">
+                {activeSector.nameJP}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Description */}
@@ -105,35 +172,77 @@ export default function SSWHero() {
           comprehensive training materials designed for SSW success.
         </p>
 
-        {/* Stats Cards */}
+        {/* Interactive Sector Carousel */}
+        <div className="mb-10 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <h3 className="text-lg font-bold text-gray-700 dark:text-gray-300 mb-4">
+            Explore All 14 Sectors
+          </h3>
+          <div className="flex flex-wrap justify-center gap-3 max-w-5xl mx-auto">
+            {SSW_SECTORS.map((sector, index) => (
+              <button
+                key={sector.id}
+                onMouseEnter={() => setHoveredSector(index)}
+                onMouseLeave={() => setHoveredSector(null)}
+                onClick={() => setCurrentSector(index)}
+                className={`group relative px-4 py-2 rounded-xl backdrop-blur-xl border-2 transition-all duration-300 hover:scale-110 ${
+                  currentSector === index
+                    ? 'bg-white/90 dark:bg-gray-800/90 border-blue-400 dark:border-blue-500 shadow-xl'
+                    : 'bg-white/60 dark:bg-gray-800/60 border-gray-300 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{sector.icon}</span>
+                  <div className="text-left hidden sm:block">
+                    <div className="text-xs font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                      {sector.name}
+                    </div>
+                  </div>
+                </div>
+                {currentSector === index && (
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Enhanced Stats Cards with Animation */}
         <div
           className="flex flex-wrap justify-center gap-4 mb-10 animate-fade-in"
           style={{ animationDelay: '0.4s' }}
         >
-          <div className="px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-xl">
-            <div className="text-3xl font-black text-blue-600 dark:text-blue-400 mb-1">14</div>
-            <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">Sectors</div>
-          </div>
-
-          <div className="px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border-2 border-cyan-200 dark:border-cyan-800 shadow-xl">
-            <div className="text-3xl font-black text-cyan-600 dark:text-cyan-400 mb-1">3</div>
-            <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Program Types
+          <div className="group px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
+            <div className="text-3xl font-black text-blue-600 dark:text-blue-400 mb-1 group-hover:scale-110 transition-transform">
+              14
             </div>
+            <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">Industries</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">特定技能分野</div>
           </div>
 
-          <div className="px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border-2 border-indigo-200 dark:border-indigo-800 shadow-xl">
-            <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400 mb-1">
+          <div className="group px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border-2 border-cyan-200 dark:border-cyan-800 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
+            <div className="text-3xl font-black text-cyan-600 dark:text-cyan-400 mb-1 group-hover:scale-110 transition-transform">
+              200K+
+            </div>
+            <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              SSW Workers
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">就労者数</div>
+          </div>
+
+          <div className="group px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border-2 border-indigo-200 dark:border-indigo-800 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
+            <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400 mb-1 group-hover:scale-110 transition-transform">
               N4-N3
             </div>
             <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">JLPT Level</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">日本語能力</div>
           </div>
 
-          <div className="px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border-2 border-purple-200 dark:border-purple-800 shadow-xl">
-            <div className="text-3xl font-black text-purple-600 dark:text-purple-400 mb-1">
+          <div className="group px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border-2 border-purple-200 dark:border-purple-800 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
+            <div className="text-3xl font-black text-purple-600 dark:text-purple-400 mb-1 group-hover:scale-110 transition-transform">
               500+
             </div>
             <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">Pages/Book</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">教材ページ数</div>
           </div>
         </div>
 

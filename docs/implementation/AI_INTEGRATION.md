@@ -1,212 +1,212 @@
+
 # AI Integration Architecture
 
 ## Overview
-This document outlines the AI integration architecture for the Japanese learning platform, incorporating multiple AI services for conversation, content generation, pronunciation analysis, and more.
+
+This document outlines the AI integration architecture for the Shinmen Takezo Japanese learning platform. The system is powered exclusively by NVIDIA's specialized Japanese language models, providing high-quality content generation and conversational AI capabilities.
 
 ## 1. AI Services Architecture
 
-### 1.1 Service Integration Layers
+### 1.1 NVIDIA NIM Integration
 
-#### AI Service Manager
-```javascript
-// lib/ai/service-manager.js
-class AIServiceManager {
-  constructor() {
-    this.services = {
-      openai: new OpenAIService(),
-      googleSpeech: new GoogleSpeechService(),
-      azureCognitive: new AzureCognitiveService(),
-      elevenLabs: new ElevenLabsService()
-    };
+The platform uses NVIDIA's NIM (NVIDIA Inference Microservice) API to access specialized Japanese language models:
+
+```typescript
+// src/lib/ai/nvidia-client.ts
+import { createOpenAI } from '@ai-sdk/openai'
+
+// Configure NVIDIA provider
+const nvidia = createOpenAI({
+  apiKey: process.env.NVIDIA_API_KEY || '',
+  baseURL: process.env.NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1',
+})
+
+// Primary model for Japanese content
+const JAPANESE_MODEL = 'stockmark/stockmark-2-100b-instruct'
+```
+
+### 1.2 Model Router
+
+The model router handles different AI tasks and selects appropriate models:
+
+```typescript
+// src/lib/ai/model-router.ts
+export enum ModelTask {
+  TEXTBOOK_GENERATION = 'textbook_generation',
+  CONVERSATION_PRACTICE = 'conversation_practice',
+  GRAMMAR_EXPLANATION = 'grammar_explanation',
+  VOCABULARY_GENERATION = 'vocabulary_generation',
+  KANJI_STROKE_ORDER = 'kanji_stroke_order',
+}
+
+export class ModelRouter {
+  async route(params: {
+    task: ModelTask
+    messages: Array<{ role: string; content: string }>
+    temperature?: number
+    maxTokens?: number
+  }) {
+    const model = this.selectModel(params.task)
+
+    return await nvidia.chat.completions.create({
+      model,
+      messages: params.messages,
+      temperature: params.temperature || 0.7,
+      max_tokens: params.maxTokens || 2000,
+    })
   }
 
-  async getService(serviceName) {
-    return this.services[serviceName];
-  }
-
-  async executeWithFallback(primaryService, fallbackService, ...args) {
-    try {
-      return await this.services[primaryService].execute(...args);
-    } catch (error) {
-      console.warn(`Primary service ${primaryService} failed, falling back to ${fallbackService}`);
-      return await this.services[fallbackService].execute(...args);
+  private selectModel(task: ModelTask): string {
+    switch (task) {
+      case ModelTask.TEXTBOOK_GENERATION:
+        return 'stockmark/stockmark-2-100b-instruct'
+      case ModelTask.CONVERSATION_PRACTICE:
+        return 'meta/llama-3.1-8b-instruct'
+      case ModelTask.GRAMMAR_EXPLANATION:
+        return 'stockmark/stockmark-2-100b-instruct'
+      case ModelTask.VOCABULARY_GENERATION:
+        return 'stockmark/stockmark-2-100b-instruct'
+      case ModelTask.KANJI_STROKE_ORDER:
+        return 'stockmark/stockmark-2-100b-instruct'
+      default:
+        return 'stockmark/stockmark-2-100b-instruct'
     }
   }
 }
-
-export const aiServiceManager = new AIServiceManager();
 ```
 
-### 1.2 API Gateway Pattern
-```javascript
-// lib/ai/gateway.js
-class AIGateway {
-  constructor() {
-    this.rateLimiter = new RateLimiter();
-    this.cache = new CacheService();
-  }
+## 2. Content Generation Services
 
-  async processRequest(service, method, params, userId) {
-    // Rate limiting
-    if (!await this.rateLimiter.checkLimit(userId, service)) {
-      throw new Error('Rate limit exceeded');
-    }
+### 2.1 JLPT-Compliant Content Generator
 
-    // Check cache first
-    const cacheKey = this.generateCacheKey(service, method, params);
-    const cachedResult = await this.cache.get(cacheKey);
-    if (cachedResult) {
-      return cachedResult;
-    }
+The content generator creates Japanese learning materials that adhere to JLPT specifications:
 
-    // Process with service
-    const result = await aiServiceManager.getService(service)[method](params);
+```typescript
+// src/lib/ai/jlpt-content-generator.ts
+export class JLPTContentGenerator {
+  async generateTextbookChapter(params: {
+    jlptLevel: JLPTLevel
+    chapterNumber: number
+    topic: string
+    grammarPatterns?: string[]
+    vocabularyItems?: string[]
+    includeCulturalNotes?: boolean
+    includeSlang?: boolean
+  }) {
+    const prompt = this.createJLPTPrompt(params)
 
-    // Cache result
-    await this.cache.set(cacheKey, result, this.getCacheTTL(service));
-
-    return result;
-  }
-
-  generateCacheKey(service, method, params) {
-    return `${service}:${method}:${JSON.stringify(params)}`;
-  }
-
-  getCacheTTL(service) {
-    const ttlMap = {
-      'openai': 3600, // 1 hour
-      'googleSpeech': 86400, // 24 hours
-      'azureCognitive': 86400, // 24 hours
-      'elevenLabs': 86400 // 24 hours
-    };
-    return ttlMap[service] || 3600;
-  }
-}
-
-export const aiGateway = new AIGateway();
-```
-
-## 2. OpenAI GPT Integration
-
-### 2.1 Content Generation Services
-
-#### Content Generator Class
-```javascript
-// lib/ai/openai/content-generator.js
-import OpenAI from 'openai';
-
-class ContentGenerator {
-  constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
-    });
-  }
-
-  async generateLessonContent(promptData) {
-    const prompt = this.createLessonPrompt(promptData);
-
-    const response = await this.openai.chat.completions.create({
-      model: "gpt-4-turbo",
+    const response = await modelRouter.route({
+      task: ModelTask.TEXTBOOK_GENERATION,
       messages: [
         {
-          role: "system",
-          content: "You are a Japanese language education expert creating engaging lesson content."
+          role: 'system',
+          content: `You are an expert Japanese language instructor creating JLPT ${params.jlptLevel} content. All content must be accurate, culturally appropriate, and follow official JLPT specifications.`
         },
         {
-          role: "user",
+          role: 'user',
           content: prompt
         }
       ],
       temperature: 0.7,
-      max_tokens: 2000,
-      response_format: { type: "json_object" }
-    });
+      maxTokens: 4000,
+    })
 
-    return JSON.parse(response.choices[0].message.content);
+    return this.parseAndValidateResponse(response.choices[0].message.content)
   }
 
-  createLessonPrompt(promptData) {
+  private createJLPTPrompt(params: {
+    jlptLevel: JLPTLevel
+    chapterNumber: number
+    topic: string
+    grammarPatterns?: string[]
+    vocabularyItems?: string[]
+    includeCulturalNotes?: boolean
+    includeSlang?: boolean
+  }): string {
     return `
-      Generate a Japanese language lesson for a ${promptData.jlptLevel} level student.
-      Student interests: ${promptData.interests.join(', ')}
-      Learning objectives: ${promptData.objectives.join(', ')}
+      Create Chapter ${params.chapterNumber} of a JLPT ${params.jlptLevel} textbook on: ${params.topic}
 
-      Return a JSON object with the following structure:
+      Requirements:
+      - Include 15-20 vocabulary items appropriate for ${params.jlptLevel}
+      - Include 3-5 grammar patterns with detailed explanations
+      - Provide 10+ example sentences with translations
+      - Include cultural notes about usage context
+      - Add practice exercises with answer keys
+      ${params.includeSlang ? 'Include relevant slang/colloquial expressions' : ''}
+
+      Format as JSON with this structure:
       {
-        "title": "Lesson title",
-        "introduction": "Brief introduction to the topic",
+        "title": "Chapter title",
+        "introduction": "Brief introduction",
         "vocabulary": [
           {
-            "word": "Japanese word",
-            "reading": "Furigana reading",
-            "meaning": "English meaning",
-            "example_sentence": "Example sentence in Japanese",
-            "sentence_meaning": "English translation"
+            "word": "日本語",
+            "reading": "にほんご",
+            "meaning": "Japanese language",
+            "type": "noun",
+            "jlptLevel": "${params.jlptLevel}",
+            "examples": [
+              {
+                "japanese": "日本語を勉強しています。",
+                "romaji": "Nihongo o benkyou shiteimasu.",
+                "english": "I am studying Japanese."
+              }
+            ]
           }
         ],
-        "grammar": {
-          "point": "Grammar point name",
-          "explanation": "Detailed explanation",
-          "examples": ["Example 1", "Example 2"]
-        },
-        "practice_exercises": [
+        "grammarPoints": [
           {
-            "type": "fill_in_blank|multiple_choice|translation",
-            "question": "Question text",
-            "options": ["Option 1", "Option 2"], // For multiple choice
-            "correct_answer": "Correct answer"
+            "pattern": "〜ています",
+            "meaning": "Present progressive tense",
+            "formation": "Verb stem + ています",
+            "usage": "Actions in progress",
+            "examples": [
+              {
+                "japanese": "今、勉強しています。",
+                "romaji": "Ima, benkyou shiteimasu.",
+                "english": "I am studying now."
+              }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "fill_in_blank",
+            "question": "日本語を______います。",
+            "answer": "勉強し",
+            "explanation": "Present progressive form of 勉強する (benkyou suru)"
+          }
+        ],
+        "culturalNotes": [
+          {
+            "topic": "Language learning in Japan",
+            "content": "Japanese people appreciate when foreigners make an effort to learn their language..."
           }
         ]
       }
-    `;
-  }
-
-  async generateStory(storyParams) {
-    const prompt = `
-      Write a short story in Japanese at JLPT ${storyParams.level} level.
-      Theme: ${storyParams.theme}
-      Length: ${storyParams.wordCount} words
-      Include furigana for kanji
-      Provide English translation
-
-      Return JSON:
-      {
-        "title": "Story title",
-        "japanese_text": "Story with furigana markup",
-        "english_translation": "English translation",
-        "vocabulary_list": [...],
-        "grammar_points": [...]
-      }
-    `;
-
-    const response = await this.openai.chat.completions.create({
-      model: "gpt-4-turbo",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.8,
-      max_tokens: 3000,
-      response_format: { type: "json_object" }
-    });
-
-    return JSON.parse(response.choices[0].message.content);
+    `
   }
 }
-
-export const contentGenerator = new ContentGenerator();
 ```
 
-### 2.2 Conversation Partner Service
+### 2.2 Conversation Partner
 
-#### Dialogue Manager
-```javascript
-// lib/ai/openai/conversation-partner.js
-class ConversationPartner {
-  constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
-    });
-    this.conversationHistory = new Map(); // In production, use Redis or database
-  }
+The AI conversation partner provides interactive Japanese practice:
 
+```typescript
+// src/app/api/ai/chat/route.ts
+export async function POST(req: NextRequest) {
+  const startTime = Date.now()
+
+  try {
+    const { messages, conversationId, model = 'meta/llama-3.1-8b-instruct' } = await req.json()
+
+    if (!messages || !Array.isArray(messages)) {
+      return new Response('Messages array is required', { status: 400 })
+    }
+
+    // Track chat message sent
+    const lastMessage = messages[messages.length - 1]
   async processMessage(userId, message, context = {}) {
     // Get conversation history
     const history = this.getConversationHistory(userId);

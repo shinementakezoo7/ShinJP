@@ -154,7 +154,7 @@ export default function Enhanced3DHero() {
           [...Array(15)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute text-4xl"
+              className="absolute"
               initial={{
                 x: Math.random() * window.innerWidth,
                 y: -100,
@@ -174,7 +174,7 @@ export default function Enhanced3DHero() {
                 ease: 'linear',
               }}
             >
-              🌸
+              <img src="/icons/sakura.svg" alt="Sakura" className="w-6 h-6 opacity-70" />
             </motion.div>
           ))}
       </div>
@@ -213,23 +213,23 @@ export default function Enhanced3DHero() {
               className="relative inline-flex items-center gap-3 bg-white/50 dark:bg-black/40 backdrop-blur-2xl rounded-full px-8 py-3 border-2 border-red-800/30 dark:border-red-400/30 shadow-2xl"
               whileHover={{ scale: 1.05 }}
             >
-              <motion.span
+              <motion.img
+                src="/icons/flags.svg"
+                alt="Flags"
+                className="w-6 h-6"
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                className="text-2xl"
-              >
-                🎌
-              </motion.span>
+              />
               <span className="text-sm font-black text-red-900 dark:text-red-300 tracking-wider uppercase">
                 Way of Japanese Mastery
               </span>
-              <motion.span
+              <motion.img
+                src="/icons/flags.svg"
+                alt="Flags"
+                className="w-6 h-6"
                 animate={{ rotate: [0, -10, 10, 0] }}
                 transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, delay: 0.5 }}
-                className="text-2xl"
-              >
-                🎌
-              </motion.span>
+              />
             </motion.div>
           </motion.div>
 

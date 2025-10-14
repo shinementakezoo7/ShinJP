@@ -9,66 +9,85 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Enhanced Compact Japanese-Themed Navbar */}
-      <header className="navbar-liquid-enhanced sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-2 sm:py-3 sm:px-6 lg:px-8">
+      <header className="navbar-liquid-enhanced sticky top-0 z-50 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-2.5 sm:py-3.5 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
-            {/* Logo with Japanese Style */}
-            <Link href="/" className="navbar-logo-enhanced flex items-center gap-2 sm:gap-3">
+            {/* Logo with Japanese Style - Enhanced */}
+            <Link href="/" className="navbar-logo-enhanced flex items-center gap-2 sm:gap-3 group">
               <div className="relative">
-                <span className="japanese-text text-2xl sm:text-3xl text-red-700 dark:text-red-400 liquid-text-morph relative z-10">
+                <span className="japanese-text text-3xl sm:text-4xl text-red-700 dark:text-red-400 liquid-text-morph relative z-10 transition-all duration-300 group-hover:scale-110">
                   侍
                 </span>
-                <div className="absolute inset-0 bg-red-600/20 blur-lg rounded-full animate-pulse-slow"></div>
+                <div className="absolute inset-0 bg-red-600/30 dark:bg-red-400/30 blur-xl rounded-full animate-pulse-slow"></div>
+                {/* Additional glow layers */}
+                <div className="absolute -inset-2 bg-gradient-to-r from-red-600/20 to-orange-600/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </div>
               <div className="hidden sm:block">
-                <div className="text-lg sm:text-xl font-black text-gray-900 dark:text-white tracking-tight">
+                <div className="text-lg sm:text-xl font-black text-gray-900 dark:text-white tracking-tight group-hover:text-red-700 dark:group-hover:text-red-400 transition-colors duration-300">
                   Shinmen Takezo
                 </div>
                 <div className="text-[10px] text-gray-600 dark:text-gray-400 japanese-text tracking-wider">
                   新免武蔵 • 日本語学習
                 </div>
               </div>
-              <span className="sm:hidden text-base font-bold text-gray-900 dark:text-white">
+              <span className="sm:hidden text-base font-bold text-gray-900 dark:text-white group-hover:text-red-700 dark:group-hover:text-red-400 transition-colors duration-300">
                 侍
               </span>
             </Link>
 
-            {/* Right Side Controls */}
+            {/* Right Side Controls - Enhanced */}
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Controls wrapper with better styling */}
               <div className="navbar-controls-wrapper">
                 <ThemeToggle />
                 <FontSizeControl />
               </div>
+
+              {/* Navigation Links - Enhanced */}
               <Link
                 href="/ssw"
-                className="px-3 py-1.5 text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                className="group relative px-3 py-2 text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
               >
                 <span className="hidden sm:inline">SSW</span>
                 <span className="sm:hidden">特</span>
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-blue-700 dark:bg-blue-400 group-hover:w-3/4 transition-all duration-300"></div>
               </Link>
+
               <Link
                 href="/showcase"
-                className="px-3 py-1.5 text-xs sm:text-sm font-medium text-red-700 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors"
+                className="group relative px-3 py-2 text-xs sm:text-sm font-medium text-red-700 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors duration-300 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
               >
-                UI Showcase
+                <span className="hidden sm:inline">UI Showcase</span>
+                <span className="sm:hidden">展</span>
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-red-700 dark:bg-red-400 group-hover:w-3/4 transition-all duration-300"></div>
               </Link>
+
+              {/* Enhanced CTA Button */}
               <Link
                 href="/dashboard"
-                className="navbar-cta-button group relative inline-flex items-center px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-full overflow-hidden transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+                aria-label="Go to Dashboard"
+                className="navbar-cta-button group relative inline-flex items-center px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-bold rounded-full overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-500/50"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-red-700 via-orange-600 to-amber-600"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-600 via-orange-600 to-red-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <span className="relative text-white flex items-center gap-1.5 sm:gap-2">
-                  <span className="hidden sm:inline">Dashboard</span>
-                  <span className="sm:hidden">道</span>
-                  <span className="text-sm">⛩️</span>
+                <span className="relative text-white flex items-center gap-1.5 sm:gap-2 z-10">
+                  <span className="hidden sm:inline tracking-wide">Dashboard</span>
+                  <span className="sm:hidden japanese-text font-bold">道</span>
+                  <img
+                    src="/icons/torii.svg"
+                    alt=""
+                    className="w-4 h-4 opacity-90 group-hover:scale-110 transition-transform duration-300"
+                    aria-hidden="true"
+                  />
                 </span>
+                {/* Glow effect */}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600 via-orange-500 to-amber-600 opacity-0 group-hover:opacity-50 blur-lg transition-opacity duration-300 -z-10"></div>
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Animated bottom border */}
+        {/* Animated bottom border - Enhanced */}
         <div className="navbar-border-animation"></div>
       </header>
 
@@ -109,8 +128,8 @@ export default function Home() {
           </div>
 
           {/* Decorative Torii Gate */}
-          <div className="absolute top-10 right-10 text-8xl opacity-5 dark:opacity-10 pointer-events-none animate-pulse-slow">
-            ⛩️
+          <div className="absolute top-10 right-10 opacity-5 dark:opacity-10 pointer-events-none animate-pulse-slow">
+            <img src="/icons/torii.svg" alt="Torii background" className="w-20 h-20" />
           </div>
 
           <div className="max-w-7xl mx-auto relative z-10">
@@ -132,17 +151,82 @@ export default function Home() {
               {/* Japanese Divider */}
               <div className="flex items-center justify-center gap-4 mb-6">
                 <div className="h-px w-16 sm:w-24 bg-gradient-to-r from-transparent via-red-600 to-transparent"></div>
-                <span className="text-2xl sm:text-3xl">🌸</span>
+                <img src="/icons/sakura.svg" alt="Sakura" className="w-8 h-8 opacity-80" />
                 <div className="h-px w-16 sm:w-24 bg-gradient-to-r from-transparent via-red-600 to-transparent"></div>
               </div>
 
               <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto font-medium">
                 Experience the future of{' '}
-                <span className="japanese-text text-red-600 dark:text-red-400 font-bold">
+                <span className="japanese-text font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-red-600 via-pink-600 to-purple-600 dark:from-red-400 dark:via-pink-400 dark:to-purple-400">
                   日本語
                 </span>{' '}
-                learning
+                <span className="relative">
+                  learning
+                  <span className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-red-600 via-pink-600 to-purple-600/60 dark:from-red-400 dark:via-pink-400 dark:to-purple-400/60"></span>
+                </span>
               </p>
+
+              {/* Quick highlights row */}
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 dark:bg-white/10 backdrop-blur-md border border-red-600/20 dark:border-red-400/20 text-sm text-gray-800 dark:text-gray-200">
+                  <img src="/icons/chip.svg" alt="AI" className="w-4 h-4 opacity-90" />
+                  AI Powered Learning
+                </span>
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 dark:bg-white/10 backdrop-blur-md border border-amber-600/20 dark:border-amber-400/20 text-sm text-gray-800 dark:text-gray-200">
+                  <img src="/icons/repeat.svg" alt="Repeat" className="w-4 h-4 opacity-90" />
+                  <span className="japanese-text">反復</span> Spaced Repetition
+                </span>
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 dark:bg-white/10 backdrop-blur-md border border-purple-600/20 dark:border-purple-400/20 text-sm text-gray-800 dark:text-gray-200">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 15h12a3 3 0 0 0 3-3v-1a4 4 0 0 0-4-4h-2l-2-2h-2l-2 2H7a4 4 0 0 0-4 4v1a3 3 0 0 0 3 3Z"
+                    />
+                    <circle cx="9" cy="12" r="1" fill="currentColor" />
+                    <circle cx="15" cy="12" r="1" fill="currentColor" />
+                    <path
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      d="M9 12h-2m10 0h-2"
+                    />
+                  </svg>
+                  <span className="japanese-text">没入</span> Immersive Practice
+                </span>
+              </div>
+
+              {/* CTAs */}
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+                <Link
+                  href="/dashboard"
+                  aria-label="Start Learning"
+                  className="group relative inline-flex items-center px-5 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold text-sm sm:text-base overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.03]"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-red-700 via-orange-600 to-amber-600"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-amber-600 via-orange-600 to-red-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="relative text-white flex items-center gap-2">
+                    Start Learning
+                    <img src="/icons/torii.svg" alt="Torii" className="w-4 h-4 opacity-90" />
+                  </span>
+                </Link>
+                <Link
+                  href="/demo"
+                  aria-label="View Demo"
+                  className="inline-flex items-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full border-2 border-red-600/40 dark:border-red-400/40 text-red-700 dark:text-red-300 hover:text-red-800 dark:hover:text-red-200 bg-white/70 dark:bg-white/5 backdrop-blur-md font-bold text-sm sm:text-base transition-all hover:scale-[1.03]"
+                >
+                  View Demo
+                  <img src="/icons/sakura.svg" alt="Sakura" className="w-4 h-4 opacity-90" />
+                </Link>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -182,7 +266,11 @@ export default function Home() {
                   {/* Icon Badge */}
                   <div className="relative flex justify-center mb-6">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-500 to-pink-600 dark:from-red-400 dark:to-pink-500 rounded-2xl shadow-xl transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                      <span className="text-4xl">🤖</span>
+                      <img
+                        src="/icons/chip.svg"
+                        alt="AI chip icon"
+                        className="w-10 h-10 opacity-90"
+                      />
                     </div>
                   </div>
 
@@ -193,15 +281,35 @@ export default function Home() {
                     </h3>
                     <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 text-center leading-relaxed">
                       Personalized content generation and intelligent tutoring powered by advanced{' '}
-                      <span className="font-bold text-red-600 dark:text-red-400">NVIDIA</span> and{' '}
-                      <span className="font-bold text-red-600 dark:text-red-400">OpenAI</span>{' '}
+                      <span className="inline-flex items-center gap-1 align-middle">
+                        <img src="/logos/nvidia.svg" alt="NVIDIA" className="w-4 h-4" />
+                        <span className="font-bold text-red-600 dark:text-red-400">NVIDIA</span>
+                      </span>{' '}
+                      and{' '}
+                      <span className="inline-flex items-center gap-1 align-middle">
+                        <img src="/logos/openai.svg" alt="OpenAI" className="w-4 h-4" />
+                        <span className="font-bold text-red-600 dark:text-red-400">OpenAI</span>
+                      </span>{' '}
                       models.
                     </p>
+
+                    {/* Feature chips */}
+                    <div className="mt-5 flex flex-wrap justify-center gap-2">
+                      <span className="px-2.5 py-1 text-xs rounded-full bg-red-600/10 border border-red-600/30 text-red-700 dark:text-red-300">
+                        NIM
+                      </span>
+                      <span className="px-2.5 py-1 text-xs rounded-full bg-red-600/10 border border-red-600/30 text-red-700 dark:text-red-300">
+                        OpenAI
+                      </span>
+                      <span className="px-2.5 py-1 text-xs rounded-full bg-red-600/10 border border-red-600/30 text-red-700 dark:text-red-300">
+                        Personal Tutor
+                      </span>
+                    </div>
                   </div>
 
                   {/* Decorative Sakura */}
-                  <div className="absolute -bottom-2 -right-2 text-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-500 rotate-12 group-hover:rotate-0 transform transition-transform">
-                    🌸
+                  <div className="absolute -bottom-2 -right-2 opacity-20 group-hover:opacity-30 transition-opacity duration-500 rotate-12 group-hover:rotate-0 transform transition-transform">
+                    <img src="/icons/sakura.svg" alt="Sakura decoration" className="w-6 h-6" />
                   </div>
                 </div>
               </div>
@@ -241,7 +349,11 @@ export default function Home() {
                   {/* Icon Badge */}
                   <div className="relative flex justify-center mb-6">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-500 to-orange-600 dark:from-amber-400 dark:to-orange-500 rounded-2xl shadow-xl transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                      <span className="text-4xl">🔄</span>
+                      <img
+                        src="/icons/repeat.svg"
+                        alt="Spaced repetition icon"
+                        className="w-10 h-10 opacity-90"
+                      />
                     </div>
                   </div>
 
@@ -256,11 +368,24 @@ export default function Home() {
                       <span className="font-bold text-amber-600 dark:text-amber-400">N5 to N1</span>
                       .
                     </p>
+
+                    {/* Feature chips */}
+                    <div className="mt-5 flex flex-wrap justify-center gap-2">
+                      <span className="px-2.5 py-1 text-xs rounded-full bg-amber-600/10 border border-amber-600/30 text-amber-700 dark:text-amber-300">
+                        FSRS
+                      </span>
+                      <span className="px-2.5 py-1 text-xs rounded-full bg-amber-600/10 border border-amber-600/30 text-amber-700 dark:text-amber-300">
+                        Adaptive
+                      </span>
+                      <span className="px-2.5 py-1 text-xs rounded-full bg-amber-600/10 border border-amber-600/30 text-amber-700 dark:text-amber-300">
+                        N5→N1
+                      </span>
+                    </div>
                   </div>
 
                   {/* Decorative Element */}
-                  <div className="absolute -bottom-2 -right-2 text-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-500 rotate-12 group-hover:rotate-0 transform transition-transform">
-                    🍂
+                  <div className="absolute -bottom-2 -right-2 opacity-20 group-hover:opacity-30 transition-opacity duration-500 rotate-12 group-hover:rotate-0 transform transition-transform">
+                    <img src="/icons/leaf.svg" alt="Leaf decoration" className="w-6 h-6" />
                   </div>
                 </div>
               </div>
@@ -310,7 +435,29 @@ export default function Home() {
                   {/* Icon Badge */}
                   <div className="relative flex justify-center mb-6">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 dark:from-purple-400 dark:to-pink-500 rounded-2xl shadow-xl transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                      <span className="text-4xl">🎮</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        className="w-10 h-10"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 15h12a3 3 0 0 0 3-3v-1a4 4 0 0 0-4-4h-2l-2-2h-2l-2 2H7a4 4 0 0 0-4 4v1a3 3 0 0 0 3 3Z"
+                        />
+                        <circle cx="9" cy="12" r="1" fill="white" />
+                        <circle cx="15" cy="12" r="1" fill="white" />
+                        <path
+                          stroke="white"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          d="M9 12h-2m10 0h-2"
+                        />
+                      </svg>
                     </div>
                   </div>
 
@@ -328,11 +475,24 @@ export default function Home() {
                       </span>{' '}
                       experiences make learning enjoyable and effective.
                     </p>
+
+                    {/* Feature chips */}
+                    <div className="mt-5 flex flex-wrap justify-center gap-2">
+                      <span className="px-2.5 py-1 text-xs rounded-full bg-purple-600/10 border border-purple-600/30 text-purple-700 dark:text-purple-300">
+                        Real Chat
+                      </span>
+                      <span className="px-2.5 py-1 text-xs rounded-full bg-purple-600/10 border border-purple-600/30 text-purple-700 dark:text-purple-300">
+                        Gamified
+                      </span>
+                      <span className="px-2.5 py-1 text-xs rounded-full bg-purple-600/10 border border-purple-600/30 text-purple-700 dark:text-purple-300">
+                        Interactive
+                      </span>
+                    </div>
                   </div>
 
                   {/* Decorative Element */}
-                  <div className="absolute -bottom-2 -right-2 text-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-500 rotate-12 group-hover:rotate-0 transform transition-transform">
-                    🎋
+                  <div className="absolute -bottom-2 -right-2 opacity-20 group-hover:opacity-30 transition-opacity duration-500 rotate-12 group-hover:rotate-0 transform transition-transform">
+                    <img src="/icons/leaf.svg" alt="Bamboo decoration" className="w-6 h-6" />
                   </div>
                 </div>
               </div>
@@ -373,8 +533,12 @@ export default function Home() {
         </div>
 
         {/* Decorative Torii Gates */}
-        <div className="absolute top-0 left-10 text-9xl opacity-5 pointer-events-none">⛩️</div>
-        <div className="absolute bottom-10 right-10 text-9xl opacity-5 pointer-events-none">⛩️</div>
+        <div className="absolute top-0 left-10 opacity-5 pointer-events-none">
+          <img src="/icons/torii.svg" alt="Torii" className="w-24 h-24" />
+        </div>
+        <div className="absolute bottom-10 right-10 opacity-5 pointer-events-none">
+          <img src="/icons/torii.svg" alt="Torii" className="w-24 h-24" />
+        </div>
 
         {/* Floating Sakura Petals */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -389,7 +553,7 @@ export default function Home() {
                 top: '-50px',
               }}
             >
-              <div className="text-3xl opacity-10">🌸</div>
+              <img src="/icons/sakura.svg" alt="Sakura" className="w-8 h-8 opacity-20" />
             </div>
           ))}
         </div>
@@ -415,7 +579,7 @@ export default function Home() {
               {/* Japanese Divider */}
               <div className="flex items-center justify-center gap-4 my-6">
                 <div className="h-px w-16 sm:w-24 bg-gradient-to-r from-transparent via-red-400 to-transparent"></div>
-                <span className="text-2xl">🌸</span>
+                <img src="/icons/sakura.svg" alt="Sakura" className="w-8 h-8 opacity-80" />
                 <div className="h-px w-16 sm:w-24 bg-gradient-to-r from-transparent via-red-400 to-transparent"></div>
               </div>
 
@@ -501,16 +665,29 @@ export default function Home() {
 
               {/* Decorative Elements */}
               <div className="mt-6 flex items-center justify-center gap-4 text-2xl">
-                <span className="opacity-30 animate-bounce-slow">🌸</span>
-                <span className="opacity-30 animate-bounce-slow" style={{ animationDelay: '0.5s' }}>
-                  ⛩️
-                </span>
-                <span className="opacity-30 animate-bounce-slow" style={{ animationDelay: '1s' }}>
-                  🍂
-                </span>
-                <span className="opacity-30 animate-bounce-slow" style={{ animationDelay: '1.5s' }}>
-                  🎋
-                </span>
+                <img
+                  src="/icons/sakura.svg"
+                  alt="Sakura"
+                  className="w-6 h-6 opacity-40 animate-bounce-slow"
+                />
+                <img
+                  src="/icons/torii.svg"
+                  alt="Torii"
+                  className="w-6 h-6 opacity-40 animate-bounce-slow"
+                  style={{ animationDelay: '0.5s' }}
+                />
+                <img
+                  src="/icons/leaf.svg"
+                  alt="Leaf"
+                  className="w-6 h-6 opacity-40 animate-bounce-slow"
+                  style={{ animationDelay: '1s' }}
+                />
+                <img
+                  src="/icons/leaf.svg"
+                  alt="Bamboo"
+                  className="w-6 h-6 opacity-40 animate-bounce-slow"
+                  style={{ animationDelay: '1.5s' }}
+                />
               </div>
             </div>
           </div>

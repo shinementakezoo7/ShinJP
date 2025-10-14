@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=flat&logo=supabase)](https://supabase.io/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-412991?style=flat&logo=openai)](https://openai.com/)
-[![License](https://img.shields.io/github/license/your-username/japanese-learning-platform?style=flat)](LICENSE)
+[![License](https://img.shields.io/github/license/your-username/japanese-learning-platform?style=flat)](../../LICENSE)
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/nextdotjs.svg" width="60" height="60" alt="Next.js" />

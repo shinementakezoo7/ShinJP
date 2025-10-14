@@ -33,7 +33,7 @@
 [![NVIDIA AI](https://img.shields.io/badge/NVIDIA_AI-stockmark--2--100b-76B900?style=for-the-badge&logo=nvidia&logoColor=white)](https://build.nvidia.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.io/)
 [![License](https://img.shields.io/badge/License-MIT-success?style=for-the-badge)](LICENSE)
-[![PRs](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge)](CONTRIBUTING.md)
+[![PRs](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge)](../../docs/contributing/CONTRIBUTING.md)
 
 </div>
 

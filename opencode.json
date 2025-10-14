@@ -1,0 +1,135 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "iflow-qwen": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "iFlow Qwen (Backend/DevOps)",
+      "options": {
+        "baseURL": "https://apis.iflow.cn/v1/chat/completions",
+        "apiKey": "sk-bfe24a8d0c433c6447ce48f80a88bd4c",
+        "apiKeyPool": [
+          "sk-5c25aa5f345613c05b9f556a11e2bfb7",
+          "sk-bfe24a8d0c433c6447ce48f80a88bd4c",
+          "sk-614e45520f3320f6c979501746684961",
+          "sk-f8f34098b3bda8b3c20067619ef193a4",
+          "sk-7ef2b459a31a8a200658075088ba56a4",
+          "sk-d3c2ff9e09c563957987921812fa2b63",
+          "sk-ea1e4e8f5c0ef3e26fdad2dcc13528ef"
+        ],
+        "retryOnRateLimit": true,
+        "maxRetries": 1
+      },
+      "models": {
+        "qwen3-max": {
+          "name": "Qwen3-Max",
+          "options": {
+            "temperature": 0.2
+          }
+        },
+        "qwen3-coder-plus": {
+          "name": "Qwen3-Coder-Plus",
+          "options": {
+            "temperature": 0.2
+          }
+        }
+      }
+    },
+    "iflow-glm": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "iFlow GLM (UI/Frontend)",
+      "options": {
+        "baseURL": "https://apis.iflow.cn/v1/chat/completions",
+        "apiKey": "sk-bfe24a8d0c433c6447ce48f80a88bd4c",
+        "apiKeyPool": [
+          "sk-5c25aa5f345613c05b9f556a11e2bfb7",
+          "sk-bfe24a8d0c433c6447ce48f80a88bd4c",
+          "sk-614e45520f3320f6c979501746684961",
+          "sk-f8f34098b3bda8b3c20067619ef193a4",
+          "sk-7ef2b459a31a8a200658075088ba56a4",
+          "sk-d3c2ff9e09c563957987721812fa2b63",
+          "sk-ea1e4e8f5c0ef3e26fdad2dcc13528ef"
+        ],
+        "retryOnRateLimit": true,
+        "maxRetries": 1
+      },
+      "models": {
+        "glm-4.6": {
+          "name": "GLM-4.6",
+          "options": {
+            "temperature": 0.3
+          }
+        }
+      }
+    },
+    "iflow-kimi": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "iFlow Kimi",
+      "options": {
+        "baseURL": "https://apis.iflow.cn/v1/chat/completions",
+        "apiKey": "sk-bfe24a8d0c433c6447ce48f80a88bd4c",
+        "apiKeyPool": [
+          "sk-5c25aa5f345613c05b9f556a11e2bfb7",
+          "sk-bfe24a8d0c433c6447ce48f80a88bd4c",
+          "sk-614e45520f3320f6c979501746684961",
+          "sk-f8f34098b3bda8b3c20067619ef193a4",
+          "sk-7ef2b459a31a8a200658075088ba56a4",
+          "sk-d3c2ff9e09c563957987721812fa2b63",
+          "sk-ea1e4e8f5c0ef3e26fdad2dcc13528ef"
+        ],
+        "retryOnRateLimit": true,
+        "maxRetries": 1
+      },
+      "models": {
+        "kimi-k2-0905": {
+          "name": "Kimi-K2-0905",
+          "options": {
+            "temperature": 0.3
+          }
+        }
+      }
+    },
+    "streamlake": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "StreamLake AI",
+      "options": {
+        "baseURL": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints",
+        "apiKey": "d_vctRZC-PFBNrCsqKY7sZPjnfs0lRX_ANIg10t2RFs",
+        "retryOnRateLimit": true,
+        "maxRetries": 1
+      },
+      "models": {
+        "ep-rtltnw-1760176619671760889": {
+          "name": "ep-rtltnw-1760176619671760889",
+          "options": {
+            "temperature": 0.2
+          }
+        }
+      }
+    },
+    "openai-chat-completions": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OpenAI using Chat Completions",
+      "options": {
+        "baseURL": "https://agentrouter.org/v1",
+        "apiKey": "sk-xSiQpGxsi3gDCOzBagmWKNZITnNtUOClR9J7FcRD9DHsSL5Y",
+        "retryOnRateLimit": true,
+        "maxRetries": 1,
+        "streamIdleTimeoutMs": 300000
+      },
+      "models": {
+        "glm-4.5": {
+          "name": "GLM-4.5",
+          "options": {
+            "temperature": 0.3
+          }
+        }
+      }
+    }
+  },
+  "model": "streamlake/ep-rtltnw-1760176619671760889",
+  "permission": {
+    "edit": "allow",
+    "bash": "allow",
+    "webfetch": "allow"
+  }
+}

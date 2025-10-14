@@ -55,7 +55,7 @@ This is said before going to bed or when parting in the evening.
 
 ## Self-Introduction
 
-When meeting someone for the first time, you'll want to introduce yourself:
+When meeting someone for the first time, you&apos;ll want to introduce yourself:
 
 **はじめまして (Hajimemashite)** - Nice to meet you (first time)
 
@@ -79,7 +79,7 @@ B: こちらこそ、よろしくお願いします。
 Try introducing yourself in Japanese! Think about:
 - What time of day it is (choose appropriate greeting)
 - Your name
-- Where you're from
+- Where you&apos;re from
 - Your interests
 
 Remember, practice makes perfect! 頑張って (ganbatte) - Do your best!
