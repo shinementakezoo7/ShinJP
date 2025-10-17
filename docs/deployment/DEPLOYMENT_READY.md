@@ -38,7 +38,7 @@
 - ✅ `ai@5.0.60` - Vercel AI SDK
 - ✅ `@ai-sdk/openai@0.1.0` - OpenAI provider for AI SDK
 - ✅ `posthog-js@1.272.0` - Product analytics
-- ✅ `@tanstack/react-query-devtools@5.90.2` - React Query debugging
+- ❌ `@tanstack/react-query-devtools@5.90.2` - React Query debugging (removed)
 
 **Configuration Files:**
 - ✅ `biome.json` - Fast linter (4-5x faster)
