@@ -10,6 +10,7 @@ export default function JapaneseLiquidHero() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [isHovered, setIsHovered] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   // Check if mobile device
@@ -20,7 +21,16 @@ export default function JapaneseLiquidHero() {
     }
     checkMobile()
     window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleReduced = () => setReducedMotion(media.matches)
+    handleReduced()
+    media.addEventListener('change', handleReduced)
+
+    return () => {
+      window.removeEventListener('resize', checkMobile)
+      media.removeEventListener('change', handleReduced)
+    }
   }, [])
 
   // Liquid blob following mouse with touch support
@@ -59,7 +69,11 @@ export default function JapaneseLiquidHero() {
   )
 
   // Use subset based on mobile state
-  const koiFish = mounted ? allKoiFish.slice(0, isMobile ? 3 : 5) : allKoiFish
+  const koiFish = mounted
+    ? reducedMotion
+      ? []
+      : allKoiFish.slice(0, isMobile ? 3 : 5)
+    : allKoiFish
 
   // Generate sparkles with stable values (max count for hydration consistency)
   const allSparkles = useMemo(
@@ -76,7 +90,11 @@ export default function JapaneseLiquidHero() {
   )
 
   // Use subset based on mobile state
-  const sparkles = mounted ? allSparkles.slice(0, isMobile ? 15 : 25) : allSparkles
+  const sparkles = mounted
+    ? reducedMotion
+      ? []
+      : allSparkles.slice(0, isMobile ? 15 : 25)
+    : allSparkles
 
   return (
     <section
@@ -86,7 +104,7 @@ export default function JapaneseLiquidHero() {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Animated Koi Fish Background Layer */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         {koiFish.map((fish) => (
           <div
             key={fish.id}
@@ -104,7 +122,10 @@ export default function JapaneseLiquidHero() {
       </div>
 
       {/* Mount Fuji Silhouette */}
-      <div className="absolute bottom-0 left-0 right-0 h-96 pointer-events-none overflow-hidden">
+      <div
+        className="absolute bottom-0 left-0 right-0 h-96 pointer-events-none overflow-hidden"
+        aria-hidden="true"
+      >
         <svg
           viewBox="0 0 1440 400"
           className="absolute bottom-0 w-full opacity-5 dark:opacity-10"
@@ -119,7 +140,7 @@ export default function JapaneseLiquidHero() {
       </div>
 
       {/* Traditional Japanese Patterns */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         {/* Enhanced Seigaiha Waves Pattern with Animation */}
         <svg
           className="absolute inset-0 w-full h-full opacity-[0.08] dark:opacity-[0.12] animate-wave-flow"
@@ -185,7 +206,7 @@ export default function JapaneseLiquidHero() {
       </div>
 
       {/* Enhanced Liquid Morphing Blobs with More Depth */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         {/* Large Red Blob with Glow */}
         <div
           className="absolute w-[700px] h-[700px] rounded-full blur-3xl opacity-35 dark:opacity-25 liquid-blob"
@@ -243,15 +264,15 @@ export default function JapaneseLiquidHero() {
       </div>
 
       {/* Torii Gate Decoration */}
-      <div className="absolute top-10 right-10 pointer-events-none">
+      <div className="absolute top-10 right-10 pointer-events-none" aria-hidden="true">
         <div className="opacity-5 dark:opacity-10 transform rotate-12 animate-pulse-slow">
           <img src="/icons/torii.svg" alt="Torii" className="w-16 h-16 sm:w-20 sm:h-20" />
         </div>
       </div>
 
       {/* Enhanced Floating Sakura Petals with Variety */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(isMobile ? 10 : 18)].map((_, i) => (
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        {(!reducedMotion ? [...Array(isMobile ? 10 : 18)] : []).map((_, i) => (
           <div
             key={i}
             className="absolute animate-sakura-float"
@@ -282,8 +303,9 @@ export default function JapaneseLiquidHero() {
       </div>
 
       {/* Animated Lanterns */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         {!isMobile &&
+          !reducedMotion &&
           [...Array(4)].map((_, i) => (
             <div
               key={i}
@@ -316,7 +338,7 @@ export default function JapaneseLiquidHero() {
       </div>
 
       {/* Ambient Sparkles */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         {sparkles.map((sparkle) => (
           <div
             key={sparkle.id}

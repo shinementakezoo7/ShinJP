@@ -1,19 +1,38 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { SSW_SECTORS } from '@/lib/ssw/sectors-data'
 
 export default function SSWHero() {
   const [mounted, setMounted] = useState(false)
   const [currentSector, setCurrentSector] = useState(0)
   const [hoveredSector, setHoveredSector] = useState<number | null>(null)
+  const [isAutoRotate, setIsAutoRotate] = useState(true)
+  const [reducedMotion, setReducedMotion] = useState(false)
 
   useEffect(() => {
     setMounted(true)
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handler = () => setReducedMotion(media.matches)
+    handler()
+    media.addEventListener('change', handler)
+    return () => media.removeEventListener('change', handler)
+  }, [])
+
+  useEffect(() => {
+    if (!isAutoRotate || reducedMotion) return
     const interval = setInterval(() => {
       setCurrentSector((prev) => (prev + 1) % SSW_SECTORS.length)
-    }, 4000)
+    }, 3500)
     return () => clearInterval(interval)
+  }, [isAutoRotate, reducedMotion])
+
+  const handlePrev = useCallback(() => {
+    setCurrentSector((prev) => (prev - 1 + SSW_SECTORS.length) % SSW_SECTORS.length)
+  }, [])
+
+  const handleNext = useCallback(() => {
+    setCurrentSector((prev) => (prev + 1) % SSW_SECTORS.length)
   }, [])
 
   const activeSector =
@@ -25,7 +44,7 @@ export default function SSWHero() {
       className={`relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-to-br transition-all duration-1000 ${gradientClass.replace('from-', 'from-').replace('to-', 'to-')}/10 dark:from-gray-900 dark:via-blue-950 dark:to-indigo-950`}
     >
       {/* Dynamic Liquid Blobs - Sector Colored */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div
           className="absolute w-[600px] h-[600px] rounded-full blur-3xl opacity-20 dark:opacity-15 transition-all duration-1000"
           style={{
@@ -47,7 +66,7 @@ export default function SSWHero() {
       </div>
 
       {/* Animated Background Pattern */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <svg
           className="absolute inset-0 w-full h-full opacity-[0.03] dark:opacity-[0.05]"
           xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +100,7 @@ export default function SSWHero() {
       </div>
 
       {/* Floating Sector Icons */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         {SSW_SECTORS.slice(0, 8).map((sector, i) => (
           <div
             key={sector.id}
@@ -142,7 +161,8 @@ export default function SSWHero() {
           </p>
 
           {/* Dynamic Sector Display */}
-          <div className="mt-4 inline-flex items-center gap-3 px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-xl transition-all duration-500">
+          <div className="mt-4 inline-flex items-center gap-3 px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-xl transition-all duration-500 relative">
+            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-indigo-500/10 blur-md -z-10" />
             <span className="text-3xl">{activeSector.icon}</span>
             <div className="text-left">
               <div className="text-sm font-bold text-gray-900 dark:text-white">
@@ -189,6 +209,7 @@ export default function SSWHero() {
                     ? 'bg-white/90 dark:bg-gray-800/90 border-blue-400 dark:border-blue-500 shadow-xl'
                     : 'bg-white/60 dark:bg-gray-800/60 border-gray-300 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600'
                 }`}
+                aria-label={`Select sector ${sector.name}`}
               >
                 <div className="flex items-center gap-2">
                   <span className="text-xl">{sector.icon}</span>
@@ -204,6 +225,37 @@ export default function SSWHero() {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Carousel controls for sectors */}
+        <div className="flex items-center justify-center gap-3 -mt-4 mb-10">
+          <button
+            type="button"
+            onClick={handlePrev}
+            className="px-3 py-2 rounded-lg bg-white/70 dark:bg-gray-800/70 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-white/90 dark:hover:bg-gray-800/90 shadow-sm"
+            aria-label="Previous sector"
+          >
+            ◀ Prev
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsAutoRotate((v) => !v)}
+            className="px-3 py-2 rounded-lg bg-white/70 dark:bg-gray-800/70 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-white/90 dark:hover:bg-gray-800/90 shadow-sm"
+            aria-pressed={!reducedMotion && isAutoRotate}
+            aria-label={
+              isAutoRotate && !reducedMotion ? 'Pause auto rotation' : 'Play auto rotation'
+            }
+          >
+            {isAutoRotate && !reducedMotion ? '⏸ Pause' : '▶ Play'}
+          </button>
+          <button
+            type="button"
+            onClick={handleNext}
+            className="px-3 py-2 rounded-lg bg-white/70 dark:bg-gray-800/70 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-white/90 dark:hover:bg-gray-800/90 shadow-sm"
+            aria-label="Next sector"
+          >
+            Next ▶
+          </button>
         </div>
 
         {/* Enhanced Stats Cards with Animation */}

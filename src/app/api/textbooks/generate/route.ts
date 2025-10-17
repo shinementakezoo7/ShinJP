@@ -43,6 +43,34 @@ interface TextbookGenerationRequest {
 
 export async function POST(req: NextRequest) {
   try {
+    // Ensure required environment variables are present to avoid HTML error pages
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return NextResponse.json(
+        {
+          error: 'Supabase is not configured',
+          details:
+            'Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables.',
+        },
+        { status: 503 }
+      )
+    }
+    // Check if NVIDIA API is configured
+    if (
+      !process.env.NVIDIA_API_KEY &&
+      !process.env.NVIDIA_API_KEY_1 &&
+      !process.env.NVIDIA_API_KEY_2
+    ) {
+      console.error('❌ NVIDIA API keys not configured')
+      return NextResponse.json(
+        {
+          error: 'NVIDIA API is not configured',
+          details:
+            'Please set NVIDIA_API_KEY, NVIDIA_API_KEY_1, or NVIDIA_API_KEY_2 in your environment variables.',
+        },
+        { status: 503 }
+      )
+    }
+
     const body: TextbookGenerationRequest = await req.json()
 
     // Set defaults for optional fields

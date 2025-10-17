@@ -26,13 +26,17 @@ export default function ChatSidebar({
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filteredConversations, setFilteredConversations] = useState<Conversation[]>([])
 
   const loadConversations = async () => {
     try {
       setIsLoading(true)
       const response = await fetch('/api/chat/conversations?user_id=anonymous')
       const data = await response.json()
-      setConversations(data.conversations || [])
+      const loadedConversations = data.conversations || []
+      setConversations(loadedConversations)
+      setFilteredConversations(loadedConversations)
     } catch (error) {
       console.error('Error loading conversations:', error)
     } finally {
@@ -42,8 +46,18 @@ export default function ChatSidebar({
 
   useEffect(() => {
     loadConversations()
-     
   }, [])
+
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredConversations(conversations)
+    } else {
+      const filtered = conversations.filter((conv) =>
+        conv.title.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      setFilteredConversations(filtered)
+    }
+  }, [searchTerm, conversations])
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -143,6 +157,30 @@ export default function ChatSidebar({
           </button>
         </div>
 
+        {/* Search Bar */}
+        <div className="relative mb-3">
+          <input
+            type="text"
+            placeholder="Search conversations..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+          />
+          <svg
+            className="absolute right-3 top-2.5 w-4 h-4 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
+
         <button
           onClick={onNewConversation}
           className="w-full px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 rounded-xl font-semibold text-white shadow-lg transition-all hover:shadow-xl flex items-center justify-center gap-2"
@@ -184,7 +222,7 @@ export default function ChatSidebar({
           </div>
         ) : (
           <div className="p-3 space-y-2">
-            {conversations.map((conv) => (
+            {filteredConversations.map((conv) => (
               <button
                 key={conv.id}
                 onClick={() => onSelectConversation(conv.id)}

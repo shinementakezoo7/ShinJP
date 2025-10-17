@@ -493,25 +493,50 @@ export default function CommunityPage() {
               </button>
             </motion.div>
 
-            {/* Community Challenges */}
+            {/* Community Challenges - Enhanced */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
               className="bg-white/60 dark:bg-black/40 backdrop-blur-xl rounded-2xl border-2 border-red-800/20 dark:border-red-400/20 shadow-xl p-6"
             >
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <span>🎯</span> Active Challenges
-              </h2>
-              <div className="space-y-3">
-                {CHALLENGES.map((challenge) => (
-                  <div
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <span>🎯</span> Active Challenges
+                </h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                    Animated by Framer Motion
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {CHALLENGES.map((challenge, idx) => (
+                  <motion.div
                     key={challenge.id}
-                    className="relative p-4 rounded-xl bg-white/50 dark:bg-black/30 overflow-hidden group hover:scale-105 transition-transform"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * idx }}
+                    whileHover={{ scale: 1.03 }}
+                    className="relative p-4 rounded-xl bg-white/50 dark:bg-black/30 overflow-hidden group"
                   >
                     <div
                       className={`absolute inset-0 bg-gradient-to-br ${challenge.color} opacity-10 group-hover:opacity-20 transition-opacity`}
-                    ></div>
+                    />
+
+                    {/* Accent border animation */}
+                    <motion.div
+                      className="absolute inset-0 rounded-xl"
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                      transition={{ duration: 0.2 }}
+                      style={{
+                        boxShadow:
+                          'inset 0 0 0 2px rgba(239,68,68,0.25), inset 0 0 0 4px rgba(247,171,108,0.15)',
+                      }}
+                    />
+
                     <div className="relative z-10">
                       <div className="flex items-start gap-3 mb-2">
                         <div className="text-2xl">{challenge.icon}</div>
@@ -534,15 +559,59 @@ export default function CommunityPage() {
                             <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
                               🏆 {challenge.reward}
                             </span>
+                            <div className="flex items-center gap-2">
+                              <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                className="px-3 py-1.5 rounded-lg border-2 border-red-600/40 text-red-700 dark:text-red-400 text-xs font-bold hover:scale-105 transition-transform"
+                              >
+                                Details
+                              </motion.button>
+                              <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-orange-600 text-white text-xs font-bold hover:shadow-lg"
+                              >
+                                Join
+                              </motion.button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <button className="w-full mt-2 px-4 py-2 rounded-lg bg-gradient-to-r from-red-600 to-orange-600 text-white text-sm font-bold hover:scale-105 transition-transform">
-                        Join Challenge
-                      </button>
+
+                      {/* Progress preview bar */}
+                      <div className="mt-3">
+                        <div className="h-2 bg-gray-200/60 dark:bg-gray-700/60 rounded-full overflow-hidden">
+                          <motion.div
+                            className="h-2 bg-gradient-to-r from-red-600 via-orange-600 to-amber-600"
+                            initial={{ width: '20%' }}
+                            animate={{ width: `${30 + idx * 15}%` }}
+                            transition={{ duration: 0.8, delay: 0.1 * idx }}
+                          />
+                        </div>
+                        <div className="mt-1 flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400">
+                          <span>Goal progress</span>
+                          <span>{30 + idx * 15}%</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
+              </div>
+
+              {/* CTA */}
+              <div className="mt-4 text-center">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <Link
+                    href="#"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/70 dark:bg-black/30 border-2 border-red-600/40 text-red-700 dark:text-red-400 text-sm font-bold hover:scale-105 transition-transform"
+                  >
+                    Browse All Challenges
+                    <span>→</span>
+                  </Link>
+                </motion.div>
               </div>
             </motion.div>
           </div>

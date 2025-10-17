@@ -7,6 +7,23 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if NVIDIA API is configured
+    if (
+      !process.env.NVIDIA_API_KEY &&
+      !process.env.NVIDIA_API_KEY_1 &&
+      !process.env.NVIDIA_API_KEY_2
+    ) {
+      console.error('❌ NVIDIA API keys not configured')
+      return NextResponse.json(
+        {
+          error: 'NVIDIA API is not configured',
+          details:
+            'Please set NVIDIA_API_KEY, NVIDIA_API_KEY_1, or NVIDIA_API_KEY_2 in your environment variables.',
+        },
+        { status: 503 }
+      )
+    }
+
     const body = await request.json()
     const { task, messages, temperature, maxTokens } = body
 

@@ -1,11 +1,23 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import JapaneseLiquidHero from '@/components/hero/JapaneseLiquidHero'
 import FontSizeControl from '@/components/theme/FontSizeControl'
 import ThemeToggle from '@/components/theme/ThemeToggle'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
+  const router = useRouter()
+
+  // Warm up dashboard route to ensure instant navigation
+  useEffect(() => {
+    try {
+      router.prefetch('/dashboard')
+    } catch {}
+  }, [router])
+
   return (
     <div className="min-h-screen">
       {/* Enhanced Compact Japanese-Themed Navbar */}
@@ -65,6 +77,17 @@ export default function Home() {
               {/* Enhanced CTA Button */}
               <Link
                 href="/dashboard"
+                prefetch
+                onMouseEnter={() => {
+                  try {
+                    router.prefetch('/dashboard')
+                  } catch {}
+                }}
+                onTouchStart={() => {
+                  try {
+                    router.prefetch('/dashboard')
+                  } catch {}
+                }}
                 aria-label="Go to Dashboard"
                 className="navbar-cta-button group relative inline-flex items-center px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-bold rounded-full overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-500/50"
               >
@@ -73,9 +96,11 @@ export default function Home() {
                 <span className="relative text-white flex items-center gap-1.5 sm:gap-2 z-10">
                   <span className="hidden sm:inline tracking-wide">Dashboard</span>
                   <span className="sm:hidden japanese-text font-bold">道</span>
-                  <img
+                  <Image
                     src="/icons/torii.svg"
                     alt=""
+                    width={16}
+                    height={16}
                     className="w-4 h-4 opacity-90 group-hover:scale-110 transition-transform duration-300"
                     aria-hidden="true"
                   />
@@ -129,7 +154,13 @@ export default function Home() {
 
           {/* Decorative Torii Gate */}
           <div className="absolute top-10 right-10 opacity-5 dark:opacity-10 pointer-events-none animate-pulse-slow">
-            <img src="/icons/torii.svg" alt="Torii background" className="w-20 h-20" />
+            <Image
+              src="/icons/torii.svg"
+              alt="Torii background"
+              width={80}
+              height={80}
+              className="w-20 h-20"
+            />
           </div>
 
           <div className="max-w-7xl mx-auto relative z-10">
@@ -151,7 +182,13 @@ export default function Home() {
               {/* Japanese Divider */}
               <div className="flex items-center justify-center gap-4 mb-6">
                 <div className="h-px w-16 sm:w-24 bg-gradient-to-r from-transparent via-red-600 to-transparent"></div>
-                <img src="/icons/sakura.svg" alt="Sakura" className="w-8 h-8 opacity-80" />
+                <Image
+                  src="/icons/sakura.svg"
+                  alt="Sakura"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 opacity-80"
+                />
                 <div className="h-px w-16 sm:w-24 bg-gradient-to-r from-transparent via-red-600 to-transparent"></div>
               </div>
 
@@ -169,11 +206,23 @@ export default function Home() {
               {/* Quick highlights row */}
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 dark:bg-white/10 backdrop-blur-md border border-red-600/20 dark:border-red-400/20 text-sm text-gray-800 dark:text-gray-200">
-                  <img src="/icons/chip.svg" alt="AI" className="w-4 h-4 opacity-90" />
+                  <Image
+                    src="/icons/chip.svg"
+                    alt="AI"
+                    width={16}
+                    height={16}
+                    className="w-4 h-4 opacity-90"
+                  />
                   AI Powered Learning
                 </span>
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 dark:bg-white/10 backdrop-blur-md border border-amber-600/20 dark:border-amber-400/20 text-sm text-gray-800 dark:text-gray-200">
-                  <img src="/icons/repeat.svg" alt="Repeat" className="w-4 h-4 opacity-90" />
+                  <Image
+                    src="/icons/repeat.svg"
+                    alt="Repeat"
+                    width={16}
+                    height={16}
+                    className="w-4 h-4 opacity-90"
+                  />
                   <span className="japanese-text">反復</span> Spaced Repetition
                 </span>
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 dark:bg-white/10 backdrop-blur-md border border-purple-600/20 dark:border-purple-400/20 text-sm text-gray-800 dark:text-gray-200">
@@ -215,7 +264,13 @@ export default function Home() {
                   <span className="absolute inset-0 bg-gradient-to-r from-amber-600 via-orange-600 to-red-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   <span className="relative text-white flex items-center gap-2">
                     Start Learning
-                    <img src="/icons/torii.svg" alt="Torii" className="w-4 h-4 opacity-90" />
+                    <Image
+                      src="/icons/torii.svg"
+                      alt="Torii"
+                      width={16}
+                      height={16}
+                      className="w-4 h-4 opacity-90"
+                    />
                   </span>
                 </Link>
                 <Link
@@ -224,7 +279,13 @@ export default function Home() {
                   className="inline-flex items-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full border-2 border-red-600/40 dark:border-red-400/40 text-red-700 dark:text-red-300 hover:text-red-800 dark:hover:text-red-200 bg-white/70 dark:bg-white/5 backdrop-blur-md font-bold text-sm sm:text-base transition-all hover:scale-[1.03]"
                 >
                   View Demo
-                  <img src="/icons/sakura.svg" alt="Sakura" className="w-4 h-4 opacity-90" />
+                  <Image
+                    src="/icons/sakura.svg"
+                    alt="Sakura"
+                    width={16}
+                    height={16}
+                    className="w-4 h-4 opacity-90"
+                  />
                 </Link>
               </div>
             </div>
@@ -266,9 +327,11 @@ export default function Home() {
                   {/* Icon Badge */}
                   <div className="relative flex justify-center mb-6">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-500 to-pink-600 dark:from-red-400 dark:to-pink-500 rounded-2xl shadow-xl transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                      <img
+                      <Image
                         src="/icons/chip.svg"
                         alt="AI chip icon"
+                        width={40}
+                        height={40}
                         className="w-10 h-10 opacity-90"
                       />
                     </div>
@@ -282,12 +345,24 @@ export default function Home() {
                     <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 text-center leading-relaxed">
                       Personalized content generation and intelligent tutoring powered by advanced{' '}
                       <span className="inline-flex items-center gap-1 align-middle">
-                        <img src="/logos/nvidia.svg" alt="NVIDIA" className="w-4 h-4" />
+                        <Image
+                          src="/logos/nvidia.svg"
+                          alt="NVIDIA"
+                          width={16}
+                          height={16}
+                          className="w-4 h-4"
+                        />
                         <span className="font-bold text-red-600 dark:text-red-400">NVIDIA</span>
                       </span>{' '}
                       and{' '}
                       <span className="inline-flex items-center gap-1 align-middle">
-                        <img src="/logos/openai.svg" alt="OpenAI" className="w-4 h-4" />
+                        <Image
+                          src="/logos/openai.svg"
+                          alt="OpenAI"
+                          width={16}
+                          height={16}
+                          className="w-4 h-4"
+                        />
                         <span className="font-bold text-red-600 dark:text-red-400">OpenAI</span>
                       </span>{' '}
                       models.
@@ -309,7 +384,13 @@ export default function Home() {
 
                   {/* Decorative Sakura */}
                   <div className="absolute -bottom-2 -right-2 opacity-20 group-hover:opacity-30 transition-opacity duration-500 rotate-12 group-hover:rotate-0 transform transition-transform">
-                    <img src="/icons/sakura.svg" alt="Sakura decoration" className="w-6 h-6" />
+                    <Image
+                      src="/icons/sakura.svg"
+                      alt="Sakura decoration"
+                      width={24}
+                      height={24}
+                      className="w-6 h-6"
+                    />
                   </div>
                 </div>
               </div>
@@ -349,9 +430,11 @@ export default function Home() {
                   {/* Icon Badge */}
                   <div className="relative flex justify-center mb-6">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-500 to-orange-600 dark:from-amber-400 dark:to-orange-500 rounded-2xl shadow-xl transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                      <img
+                      <Image
                         src="/icons/repeat.svg"
                         alt="Spaced repetition icon"
+                        width={40}
+                        height={40}
                         className="w-10 h-10 opacity-90"
                       />
                     </div>
@@ -385,7 +468,13 @@ export default function Home() {
 
                   {/* Decorative Element */}
                   <div className="absolute -bottom-2 -right-2 opacity-20 group-hover:opacity-30 transition-opacity duration-500 rotate-12 group-hover:rotate-0 transform transition-transform">
-                    <img src="/icons/leaf.svg" alt="Leaf decoration" className="w-6 h-6" />
+                    <Image
+                      src="/icons/leaf.svg"
+                      alt="Leaf decoration"
+                      width={24}
+                      height={24}
+                      className="w-6 h-6"
+                    />
                   </div>
                 </div>
               </div>
@@ -492,7 +581,13 @@ export default function Home() {
 
                   {/* Decorative Element */}
                   <div className="absolute -bottom-2 -right-2 opacity-20 group-hover:opacity-30 transition-opacity duration-500 rotate-12 group-hover:rotate-0 transform transition-transform">
-                    <img src="/icons/leaf.svg" alt="Bamboo decoration" className="w-6 h-6" />
+                    <Image
+                      src="/icons/leaf.svg"
+                      alt="Bamboo decoration"
+                      width={24}
+                      height={24}
+                      className="w-6 h-6"
+                    />
                   </div>
                 </div>
               </div>
@@ -534,10 +629,10 @@ export default function Home() {
 
         {/* Decorative Torii Gates */}
         <div className="absolute top-0 left-10 opacity-5 pointer-events-none">
-          <img src="/icons/torii.svg" alt="Torii" className="w-24 h-24" />
+          <Image src="/icons/torii.svg" alt="Torii" width={96} height={96} className="w-24 h-24" />
         </div>
         <div className="absolute bottom-10 right-10 opacity-5 pointer-events-none">
-          <img src="/icons/torii.svg" alt="Torii" className="w-24 h-24" />
+          <Image src="/icons/torii.svg" alt="Torii" width={96} height={96} className="w-24 h-24" />
         </div>
 
         {/* Floating Sakura Petals */}
@@ -553,7 +648,13 @@ export default function Home() {
                 top: '-50px',
               }}
             >
-              <img src="/icons/sakura.svg" alt="Sakura" className="w-8 h-8 opacity-20" />
+              <Image
+                src="/icons/sakura.svg"
+                alt="Sakura"
+                width={32}
+                height={32}
+                className="w-8 h-8 opacity-20"
+              />
             </div>
           ))}
         </div>

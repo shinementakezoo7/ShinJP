@@ -2,19 +2,43 @@
 
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import DailyQuests from '@/components/dashboard/DailyQuests'
-import AchievementShowcase from '@/components/dashboard/AchievementShowcase'
-import CalendarHeatmap from '@/components/dashboard/CalendarHeatmap'
-import SmartStudySchedule from '@/components/dashboard/SmartStudySchedule'
-import LiveLeaderboards from '@/components/dashboard/LiveLeaderboards'
+import { useUserStore } from '@/stores/userStore'
+import { useDashboard } from '@/hooks/useDashboard'
+import { useAnalytics } from '@/hooks/useAnalytics'
+import { createStudySession, endStudySession } from '@/lib/database/functions/analytics'
+
+// Dynamically import heavy dashboard widgets with skeleton fallbacks to improve
+// initial navigation responsiveness and reduce main bundle size.
+const DailyQuests = dynamic(() => import('@/components/dashboard/DailyQuests'), {
+  ssr: false,
+  loading: () => <ComponentSkeleton title="Daily Quests" />,
+})
+const AchievementShowcase = dynamic(() => import('@/components/dashboard/AchievementShowcase'), {
+  ssr: false,
+  loading: () => <ComponentSkeleton title="Achievements" />,
+})
+const CalendarHeatmap = dynamic(() => import('@/components/dashboard/CalendarHeatmap'), {
+  ssr: false,
+  loading: () => <ComponentSkeleton title="Study Heatmap" />,
+})
+const SmartStudySchedule = dynamic(() => import('@/components/dashboard/SmartStudySchedule'), {
+  ssr: false,
+  loading: () => <ComponentSkeleton title="Smart Study" />,
+})
+const LiveLeaderboards = dynamic(() => import('@/components/dashboard/LiveLeaderboards'), {
+  ssr: false,
+  loading: () => <ComponentSkeleton title="Leaderboards" />,
+})
 
 const CherryBlossomScene = dynamic(() => import('@/components/japanese/CherryBlossomScene'), {
   ssr: false,
+  loading: () => null,
 })
 
 export default function DashboardPageRedesigned() {
+  // Keep mounted state only for client-side animations; do not gate initial render
   const [mounted, setMounted] = useState(false)
   const [hoveredStat, setHoveredStat] = useState<number | null>(null)
   const [activeFilter, setActiveFilter] = useState('all')
@@ -23,33 +47,89 @@ export default function DashboardPageRedesigned() {
     vocabulary: 0,
     streak: 0,
   })
+  const { profile } = useUserStore()
+  const userId = profile?.id || 'anonymous'
+  const { stats, achievementsCount, loading: dashLoading, error: dashError } = useDashboard(userId)
+  const { trackFeatureUsed } = useAnalytics()
+  const sessionIdRef = useRef<number | null>(null)
+  const sessionStartRef = useRef<number | null>(null)
 
   useEffect(() => {
     setMounted(true)
+  }, [])
 
-    // Animated counters
-    const animateCounter = (target: number, key: 'lessons' | 'vocabulary' | 'streak') => {
+  // Animate counters when stats arrive
+  useEffect(() => {
+    if (!mounted) return
+    const targets = {
+      lessons: stats.lessonsCompleted || 0,
+      vocabulary: stats.vocabularyLearned || 0,
+      streak: stats.streakDays || 0,
+    }
+    const timers: NodeJS.Timeout[] = [](
+      Object.keys(targets) as Array<'lessons' | 'vocabulary' | 'streak'>
+    ).forEach((key) => {
       let current = 0
-      const increment = target / 50
-      const timer = setInterval(() => {
+      const target = targets[key]
+      const steps = 40
+      const increment = target / steps
+      const t = setInterval(() => {
         current += increment
         if (current >= target) {
           setCounters((prev) => ({ ...prev, [key]: target }))
-          clearInterval(timer)
+          clearInterval(t)
         } else {
           setCounters((prev) => ({ ...prev, [key]: Math.floor(current) }))
         }
       }, 20)
-    }
+      timers.push(t)
+    })
+    return () => timers.forEach(clearInterval)
+  }, [mounted, stats.lessonsCompleted, stats.vocabularyLearned, stats.streakDays])
 
-    if (mounted) {
-      animateCounter(12, 'lessons')
-      animateCounter(342, 'vocabulary')
-      animateCounter(7, 'streak')
+  // Lightweight session tracking for dashboard
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const start = new Date()
+        sessionStartRef.current = start.getTime()
+        const s = await createStudySession({
+          user_id: userId,
+          start_time: start.toISOString(),
+          end_time: null,
+          duration: null,
+          activities: { page: 'dashboard' },
+        } as any)
+        if (mounted && s) sessionIdRef.current = (s as any).id
+      } catch (e) {
+        // Silent fail
+      }
+    })()
+    return () => {
+      mounted = false
     }
-  }, [mounted])
+  }, [userId])
 
-  const stats = [
+  useEffect(() => {
+    const handleUnload = async () => {
+      if (!sessionStartRef.current || !sessionIdRef.current) return
+      const end = new Date()
+      const durationSec = Math.max(1, Math.floor((end.getTime() - sessionStartRef.current) / 1000))
+      try {
+        await endStudySession(sessionIdRef.current, end.toISOString(), durationSec, {
+          page: 'dashboard',
+        })
+      } catch {}
+    }
+    window.addEventListener('beforeunload', handleUnload)
+    return () => {
+      handleUnload()
+      window.removeEventListener('beforeunload', handleUnload)
+    }
+  }, [])
+
+  const statsCards = [
     {
       id: 1,
       name: 'Lessons Completed',
@@ -94,17 +174,17 @@ export default function DashboardPageRedesigned() {
     },
     {
       id: 4,
-      name: 'Current Level',
-      value: 'N3',
+      name: 'Achievements',
+      value: achievementsCount,
       kanji: '級',
-      subtext: '15% to N2',
-      link: '/progress',
-      icon: '⭐',
+      subtext: 'Unlocked so far',
+      link: '/dashboard',
+      icon: '🏆',
       color: 'from-amber-500 via-yellow-500 to-orange-500',
       bgGlow: 'bg-amber-500/20',
-      progress: 45,
-      trend: 'Expert',
-      trendUp: true,
+      progress: Math.min(100, Math.floor((achievementsCount / 20) * 100)),
+      trend: achievementsCount > 0 ? '+1 this week' : '—',
+      trendUp: achievementsCount > 0,
     },
   ]
 
@@ -151,6 +231,25 @@ export default function DashboardPageRedesigned() {
     },
   ]
 
+  // Prefetch popular destinations to ensure instant navigation from dashboard
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Soft hint: Next.js prefetches visible links automatically, but we can
+      // opportunistically warm up a few routes users often navigate to.
+      try {
+        const prefetchLinks = ['/lessons', '/vocabulary', '/practice', '/chat']
+        prefetchLinks.forEach((href) => {
+          const link = document.createElement('link')
+          link.rel = 'prefetch'
+          link.href = href
+          document.head.appendChild(link)
+        })
+      } catch (_) {
+        // no-op
+      }
+    }
+  }, [])
+
   const quickActions = [
     {
       name: 'Continue Learning',
@@ -190,25 +289,27 @@ export default function DashboardPageRedesigned() {
     },
   ]
 
-  if (!mounted) {
-    return <LoadingSkeleton />
-  }
+  // Do not block initial render; heavy widgets load progressively with fallbacks
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-950/20 dark:to-purple-950/10">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-950/20 dark:to-purple-950/10 motion-smooth">
       {/* Enhanced Background Effects */}
       <CherryBlossomScene />
 
-      {/* Animated gradient orbs */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse-slow" />
+      {/* Animated gradient orbs - do not block interactions */}
       <div
-        className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-pink-400/20 to-orange-400/20 rounded-full blur-3xl animate-pulse-slow"
+        className="pointer-events-none absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse-slow"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-pink-400/20 to-orange-400/20 rounded-full blur-3xl animate-pulse-slow"
         style={{ animationDelay: '2s' }}
+        aria-hidden="true"
       />
 
-      <div className="relative z-10">
+      <div className="relative z-10 motion-smooth">
         {/* Hero Section - Enhanced */}
-        <section className="px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+        <section className="px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-10 sm:pb-12 content-auto">
           <div className="max-w-7xl mx-auto">
             {/* Welcome Header */}
             <motion.div
@@ -265,7 +366,7 @@ export default function DashboardPageRedesigned() {
             </motion.div>
 
             {/* Enhanced Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
               {stats.map((stat, index) => (
                 <motion.div
                   key={stat.id}
@@ -276,7 +377,7 @@ export default function DashboardPageRedesigned() {
                   onHoverEnd={() => setHoveredStat(null)}
                 >
                   <Link href={stat.link}>
-                    <div className="group relative h-full">
+                    <div className="group relative h-full motion-smooth">
                       {/* Glow effect */}
                       <div
                         className={`absolute -inset-1 ${stat.bgGlow} rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
@@ -369,7 +470,7 @@ export default function DashboardPageRedesigned() {
         {/* Main Content Grid */}
         <section className="px-4 sm:px-6 lg:px-8 pb-12">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 content-auto">
               {/* Recent Activity - 2 columns */}
               <div className="lg:col-span-2">
                 <motion.div
@@ -674,7 +775,7 @@ export default function DashboardPageRedesigned() {
         </section>
 
         {/* Daily Quests Section */}
-        <section className="px-4 sm:px-6 lg:px-8 pb-12">
+        <section className="px-4 sm:px-6 lg:px-8 pb-10 sm:pb-12 content-auto">
           <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -687,7 +788,7 @@ export default function DashboardPageRedesigned() {
         </section>
 
         {/* Two Column: Calendar Heatmap & Leaderboards */}
-        <section className="px-4 sm:px-6 lg:px-8 pb-12">
+        <section className="px-4 sm:px-6 lg:px-8 pb-10 sm:pb-12 content-auto">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <motion.div
@@ -774,6 +875,25 @@ function LoadingSkeleton() {
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+// Lightweight component skeleton used as dynamic import fallbacks
+function ComponentSkeleton({ title }: { title?: string }) {
+  return (
+    <div className="p-4 sm:p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 shadow-sm animate-pulse">
+      {title && (
+        <div
+          className="h-5 w-32 mb-4 bg-gray-300 dark:bg-gray-700 rounded"
+          aria-label={`${title} loading`}
+        />
+      )}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="h-16 bg-gray-300 dark:bg-gray-700 rounded" />
+        <div className="h-16 bg-gray-300 dark:bg-gray-700 rounded" />
+        <div className="h-16 bg-gray-300 dark:bg-gray-700 rounded" />
       </div>
     </div>
   )

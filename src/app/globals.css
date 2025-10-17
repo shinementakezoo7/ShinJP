@@ -182,6 +182,31 @@
     border-color 0.3s ease;
 }
 
+/* Improve animation smoothness and prevent paint thrashing */
+.motion-smooth {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+/* Avoid rendering offscreen content until scrolled into view */
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 600px;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   line-height: 1.6;
@@ -1482,6 +1507,48 @@ a:focus-visible {
   animation: sakura-float linear infinite;
 }
 
+/* Chat Message Animations */
+@keyframes message-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-message-slide-in {
+  animation: message-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Enhanced Typing Indicator */
+@keyframes typing-pulse {
+  0%,
+  60%,
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  30% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.typing-dot {
+  animation: typing-pulse 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
 .animate-koi-swim {
   animation: koi-swim 30s ease-in-out infinite;
 }
@@ -2437,6 +2504,96 @@ a:focus-visible {
 
 .animate-float-slow {
   animation: float-slow 20s ease-in-out infinite;
+}
+
+/* SSW Card Enhancement Animations */
+@keyframes sector-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.95;
+  }
+}
+
+@keyframes program-glow {
+  0%,
+  100% {
+    box-shadow: 0 8px 16px rgba(30, 58, 138, 0.1);
+  }
+  50% {
+    box-shadow: 0 12px 24px rgba(30, 58, 138, 0.15);
+  }
+}
+
+@keyframes feature-float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes icon-spin {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Enhanced SSW Animation Classes */
+.animate-sector-pulse {
+  animation: sector-pulse 4s ease-in-out infinite;
+}
+
+.animate-program-glow {
+  animation: program-glow 3s ease-in-out infinite;
+}
+
+.animate-feature-float {
+  animation: feature-float 5s ease-in-out infinite;
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 6s ease-infinite;
+}
+
+/* Japanese Wave Pattern for SSW */
+.seigaiha-ssw {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(30, 58, 138, 0.1) 10px,
+    rgba(30, 58, 138, 0.1) 20px
+  );
+  background-size: 40px 40px;
+  animation: wave 4s linear infinite;
+}
+
+.dark .seigaiha-ssw {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(59, 89, 152, 0.15) 10px,
+    rgba(59, 89, 152, 0.15) 20px
+  );
 }
 
 @layer base {

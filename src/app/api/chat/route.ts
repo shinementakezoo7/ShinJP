@@ -11,12 +11,13 @@ interface ChatRequest {
   messages: ChatMessage[]
   temperature?: number
   stream?: boolean
+  model?: string // Allow specifying model
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: ChatRequest = await request.json()
-    const { messages, temperature = 0.7, stream = true } = body
+    const { messages, temperature = 0.7, stream = true, model } = body
 
     if (!messages || messages.length === 0) {
       return NextResponse.json({ error: 'Messages are required' }, { status: 400 })
@@ -41,13 +42,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if NVIDIA API is configured
-    if (!process.env.NVIDIA_API_KEY_1 && !process.env.NVIDIA_API_KEY_2) {
+    if (
+      !process.env.NVIDIA_API_KEY &&
+      !process.env.NVIDIA_API_KEY_1 &&
+      !process.env.NVIDIA_API_KEY_2
+    ) {
       console.error('❌ NVIDIA API keys not configured')
       return NextResponse.json(
         {
           error: 'NVIDIA API is not configured',
           details:
-            'Please set NVIDIA_API_KEY_1 in your environment variables. Visit https://build.nvidia.com/ to get your API key.',
+            'Please set NVIDIA_API_KEY, NVIDIA_API_KEY_1, or NVIDIA_API_KEY_2 in your environment variables.',
         },
         { status: 503 }
       )
@@ -113,28 +118,36 @@ Remember: You&apos;re teaching in ENGLISH to help students LEARN Japanese. Your 
     // Prepare messages for the AI
     const aiMessages = [systemPrompt, ...messages]
 
-    console.log('🤖 Processing chat request with NVIDIA stockmark-2-100b-instruct...')
+    console.log('🤖 Processing chat request with NVIDIA AI...')
     console.log(`   Messages count: ${aiMessages.length}`)
     console.log(`   Temperature: ${temperature}`)
     console.log(`   Streaming: ${stream}`)
+    console.log(`   Model: ${model || 'default'}`)
 
     // Handle streaming vs non-streaming
     if (stream) {
-      return handleStreamingResponse(aiMessages, temperature)
+      return handleStreamingResponse(aiMessages, temperature, model)
     }
 
-    // Route to NVIDIA API using stockmark-2-100b-instruct with 122K context window support
+    // Route to NVIDIA API using conversation practice task
     let response
     try {
-      response = await modelRouter.route({
+      const routeOptions: any = {
         task: ModelTask.CONVERSATION_PRACTICE,
         messages: aiMessages.map((msg) => ({
           role: msg.role,
           content: msg.content,
         })),
         temperature,
-        maxTokens: 8000, // Increased for longer, more detailed responses with 122K context
-      })
+        maxTokens: 8000,
+      }
+
+      // Use specific model if provided
+      if (model) {
+        routeOptions.model = model
+      }
+
+      response = await modelRouter.route(routeOptions)
     } catch (routeError) {
       console.error('❌ Model routing error:', routeError)
       throw new Error(
@@ -169,6 +182,7 @@ Remember: You&apos;re teaching in ENGLISH to help students LEARN Japanese. Your 
       message: cleanedContent,
       model: response.model,
       usage: response.usage,
+      success: true,
     })
   } catch (error) {
     console.error('❌ Chat API Error:', error)
@@ -212,14 +226,18 @@ Remember: You&apos;re teaching in ENGLISH to help students LEARN Japanese. Your 
 }
 
 // Streaming response handler
-async function handleStreamingResponse(messages: ChatMessage[], temperature: number) {
+async function handleStreamingResponse(
+  messages: ChatMessage[],
+  temperature: number,
+  model?: string
+) {
   const encoder = new TextEncoder()
 
   const stream = new ReadableStream({
     async start(controller) {
       try {
         // Route to NVIDIA API
-        const response = await modelRouter.route({
+        const routeOptions: any = {
           task: ModelTask.CONVERSATION_PRACTICE,
           messages: messages.map((msg) => ({
             role: msg.role,
@@ -227,7 +245,14 @@ async function handleStreamingResponse(messages: ChatMessage[], temperature: num
           })),
           temperature,
           maxTokens: 8000,
-        })
+        }
+
+        // Use specific model if provided
+        if (model) {
+          routeOptions.model = model
+        }
+
+        const response = await modelRouter.route(routeOptions)
 
         if (!response || !response.content) {
           throw new Error('AI returned an empty response')
@@ -262,6 +287,7 @@ async function handleStreamingResponse(messages: ChatMessage[], temperature: num
           type: 'done',
           model: response.model,
           usage: response.usage,
+          success: true,
         })
         controller.enqueue(encoder.encode(`data: ${doneChunk}\n\n`))
 
@@ -274,6 +300,7 @@ async function handleStreamingResponse(messages: ChatMessage[], temperature: num
         const errorChunk = JSON.stringify({
           type: 'error',
           error: error instanceof Error ? error.message : 'Unknown error',
+          success: false,
         })
         controller.enqueue(encoder.encode(`data: ${errorChunk}\n\n`))
         controller.close()

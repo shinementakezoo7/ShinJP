@@ -6,12 +6,12 @@
       "name": "iFlow Qwen (Backend/DevOps)",
       "options": {
         "baseURL": "https://apis.iflow.cn/v1/chat/completions",
-        "apiKey": "sk-5c25aa5f345613c05b9f556a11e2bfb7",
+        "apiKey": "sk-f8f34098b3bda8b3c20067619ef193a4",
         "keepAlive": true,
         "connectionPoolSize": 1,
         "maxRetries": 2,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 30000,
         "headers": {
           "Connection": "keep-alive",
           "Keep-Alive": "timeout=60, max=1000"
@@ -31,12 +31,12 @@
       "name": "iFlow GLM (UI/Frontend)",
       "options": {
         "baseURL": "https://apis.iflow.cn/v1/chat/completions",
-        "apiKey": "sk-bfe24a8d0c433c6447ce48f80a88bd4c",
+        "apiKey": "sk-614e45520f3320f6c979501746684961",
         "keepAlive": true,
         "connectionPoolSize": 1,
         "maxRetries": 2,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 30000,
         "headers": {
           "Connection": "keep-alive",
           "Keep-Alive": "timeout=60, max=1000"
@@ -56,12 +56,12 @@
       "name": "iFlow Kimi (General/Coding)",
       "options": {
         "baseURL": "https://apis.iflow.cn/v1/chat/completions",
-        "apiKey": "sk-614e45520f3320f6c979501746684961",
+        "apiKey": "sk-5c25aa5f345613c05b9f556a11e2bfb7",
         "keepAlive": true,
         "connectionPoolSize": 1,
         "maxRetries": 2,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 30000,
         "headers": {
           "Connection": "keep-alive",
           "Keep-Alive": "timeout=60, max=1000"
@@ -81,12 +81,12 @@
       "name": "iFlow Qwen Coder (Hard Logic)",
       "options": {
         "baseURL": "https://apis.iflow.cn/v1/chat/completions",
-        "apiKey": "sk-f8f34098b3bda8b3c20067619ef193a4",
+        "apiKey": "sk-bfe24a8d0c433c6447ce48f80a88bd4c",
         "keepAlive": true,
         "connectionPoolSize": 1,
         "maxRetries": 2,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 30000,
         "headers": {
           "Connection": "keep-alive",
           "Keep-Alive": "timeout=60, max=1000"
@@ -111,7 +111,7 @@
         "connectionPoolSize": 1,
         "maxRetries": 2,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 30000,
         "headers": {
           "Connection": "keep-alive",
           "Keep-Alive": "timeout=60, max=1000"
@@ -121,13 +121,13 @@
         "qwen3-max": {
           "name": "Qwen3-Max (Backup)",
           "options": {
-            "temperature": 0.1
+            "temperature": 0.2
           }
         },
         "glm-4.6": {
           "name": "GLM-4.6 (Backup)",
           "options": {
-            "temperature": 0.1
+            "temperature": 0.3
           }
         }
       }
@@ -142,7 +142,7 @@
         "connectionPoolSize": 1,
         "maxRetries": 2,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 30000,
         "headers": {
           "Connection": "keep-alive",
           "Keep-Alive": "timeout=60, max=1000"
@@ -173,7 +173,7 @@
         "connectionPoolSize": 1,
         "maxRetries": 2,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 30000,
         "headers": {
           "Connection": "keep-alive",
           "Keep-Alive": "timeout=60, max=1000"
@@ -183,32 +183,7 @@
         "qwen3-max": {
           "name": "Qwen3-Max (Backup Alt)",
           "options": {
-            "temperature": 0.1
-          }
-        }
-      }
-    },
-    "streamlake": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "StreamLake AI",
-      "options": {
-        "baseURL": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints",
-        "apiKey": "d_vctRZC-PFBNrCsqKY7sZPjnfs0lRX_ANIg10t2RFs",
-        "keepAlive": true,
-        "connectionPoolSize": 1,
-        "maxRetries": 2,
-        "streaming": true,
-        "timeout": 300000,
-        "headers": {
-          "Connection": "keep-alive",
-          "Keep-Alive": "timeout=60, max=1000"
-        }
-      },
-      "models": {
-        "ep-rtltnw-1760176619671760889": {
-          "name": "StreamLake Custom Model",
-          "options": {
-            "temperature": 0.7
+            "temperature": 0.2
           }
         }
       }
@@ -219,5 +194,33 @@
     "edit": "allow",
     "bash": "allow",
     "webfetch": "allow"
+  },
+  "optimization": {
+    "http": {
+      "keepAlive": true,
+      "connectionPooling": {
+        "enabled": true,
+        "poolSize": 1,
+        "maxSockets": 10
+      },
+      "retryPolicy": {
+        "maxRetries": 2,
+        "backoffStrategy": "exponential",
+        "initialDelay": 100
+      },
+      "streaming": {
+        "enabled": true,
+        "chunkSize": 8192
+      },
+      "dns": {
+        "cacheEnabled": true,
+        "ttl": 300
+      },
+      "network": {
+        "tcpNoDelay": true,
+        "tcpKeepAlive": true,
+        "timeout": 30000
+      }
+    }
   }
 }

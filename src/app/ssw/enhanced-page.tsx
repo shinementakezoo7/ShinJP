@@ -9,7 +9,7 @@ import SectionHeader from '@/components/navigation/SectionHeader'
 import { SSW_PROGRAMS, SSW_SECTORS } from '@/lib/ssw/sectors-data'
 import { motion } from 'framer-motion'
 
-export default function SSWPage() {
+export default function EnhancedSSWPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-950">
       {/* Enhanced Navigation Header with Back Button */}

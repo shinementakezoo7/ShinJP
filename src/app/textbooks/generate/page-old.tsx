@@ -31,6 +31,19 @@ export default function GenerateTextbookPage() {
   } | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const parseResponse = async (response: Response) => {
+    const contentType = response.headers.get('content-type') || ''
+    if (contentType.includes('application/json')) {
+      return await response.json()
+    }
+    const text = await response.text()
+    throw new Error(
+      response.ok
+        ? `Unexpected non-JSON response: ${text.slice(0, 200)}`
+        : `Request failed (${response.status}). ${text.slice(0, 200)}`
+    )
+  }
+
   const jlptLevels = [
     { value: 5, label: 'N5', description: 'Beginner (800 words, 100 kanji)' },
     { value: 4, label: 'N4', description: 'Elementary (1,500 words, 300 kanji)' },
@@ -113,7 +126,7 @@ export default function GenerateTextbookPage() {
         body: JSON.stringify(config),
       })
 
-      const data = await response.json()
+      const data = await parseResponse(response)
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to generate textbook')

@@ -1,22 +1,11 @@
-import bundleAnalyzer from '@next/bundle-analyzer'
-import million from 'million/compiler'
 import type { NextConfig } from 'next'
+import bundleAnalyzer from '@next/bundle-analyzer'
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
 
 const nextConfig: NextConfig = {
-  /* Million.js will wrap this config */
-  allowedDevOrigins: [
-    'http://localhost:3000',
-    process.env.GITPOD_WORKSPACE_URL || '',
-    `https://3000-${process.env.GITPOD_WORKSPACE_ID}.${process.env.GITPOD_WORKSPACE_CLUSTER_HOST}` ||
-      '',
-    `wss://3000-${process.env.GITPOD_WORKSPACE_ID}.${process.env.GITPOD_WORKSPACE_CLUSTER_HOST}` ||
-      '',
-  ],
-
   // Image optimization
   images: {
     remotePatterns: [
@@ -108,11 +97,5 @@ const nextConfig: NextConfig = {
   },
 }
 
-// Apply Million.js compiler (70% faster React!)
-const millionConfig = million.next(nextConfig, {
-  auto: true, // Automatic optimization
-  rsc: true, // Support React Server Components
-})
-
 // Apply bundle analyzer
-export default withBundleAnalyzer(millionConfig)
+export default withBundleAnalyzer(nextConfig)

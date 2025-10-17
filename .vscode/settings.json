@@ -57,5 +57,12 @@
     "esbenp.prettier-vscode",
     "bradlc.vscode-tailwindcss",
     "vitest.explorer"
-  ]
+  ],
+
+  // ChatGPT Extension Configuration
+  "chatgpt.apiBase": "https://agentrouter.org/v1",
+  "chatgpt.config": {
+    "pepreferred_auth_method": "api_key",
+    "model_provider": "openai-chat-completions"
+  }
 }
