@@ -1,10 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const [profile, setProfile] = useState({
     full_name: 'Guest User',
@@ -342,11 +347,13 @@ export default function ProfilePage() {
               <div className="animate-fade-in stagger-9 pt-6 border-t border-gray-200 dark:border-gray-800">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   <span className="font-semibold">Member since:</span>{' '}
-                  {new Date(profile.created_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+                  {mounted
+                    ? new Date(profile.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })
+                    : new Date(profile.created_at).toISOString().split('T')[0]}
                 </p>
               </div>
             </div>

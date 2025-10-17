@@ -1,14 +1,17 @@
 import { createOpenAI } from '@ai-sdk/openai'
 import { streamText } from 'ai'
-import type { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { analytics } from '@/lib/analytics/posthog'
 import { checkRateLimit, aiRatelimit } from '@/lib/rate-limit'
+import { aiLogger } from '@/lib/utils/logger'
 
 // Configure NVIDIA provider
 const nvidia = createOpenAI({
   apiKey: process.env.NVIDIA_API_KEY || process.env.NVIDIA_API_KEY_1 || '',
   baseURL: process.env.NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1',
 })
+
+const logger = aiLogger
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -41,12 +44,11 @@ export async function POST(req: NextRequest) {
       !process.env.NVIDIA_API_KEY_1 &&
       !process.env.NVIDIA_API_KEY_2
     ) {
-      console.error('❌ NVIDIA API keys not configured')
+      logger.error('NVIDIA API keys not configured')
       return new NextResponse(
         JSON.stringify({
           error: 'NVIDIA API is not configured',
-          details:
-            'Please set NVIDIA_API_KEY, NVIDIA_API_KEY_1, or NVIDIA_API_KEY_2 in your environment variables.',
+          details: 'Please configure the required AI service environment variables.',
         }),
         { status: 503 }
       )
@@ -80,7 +82,7 @@ export async function POST(req: NextRequest) {
     // Return streaming response
     return result.toTextStreamResponse()
   } catch (error) {
-    console.error('AI Chat error:', error)
+    logger.error('AI Chat error', { error: error instanceof Error ? error.message : String(error) })
 
     // Track error
     analytics.error(error as Error, {

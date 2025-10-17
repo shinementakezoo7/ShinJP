@@ -80,7 +80,7 @@ const iconVariants = {
   },
   hover: {
     scale: 1.15,
-    rotate: [0, 2, -2, 0],
+    rotate: [0, 2, 0],
     transition: {
       type: 'spring',
       stiffness: 500,

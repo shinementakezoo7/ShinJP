@@ -114,7 +114,7 @@ export default function DemoPage() {
             <motion.div
               className="absolute top-0 left-1/2 transform -translate-x-1/2 text-[20rem] japanese-text text-red-800/5 dark:text-red-400/5 pointer-events-none select-none font-black"
               animate={{ rotate: [0, 360] }}
-              transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+              transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
             >
               侍
             </motion.div>
@@ -127,20 +127,16 @@ export default function DemoPage() {
                 <motion.span
                   className="japanese-text text-6xl sm:text-8xl liquid-gradient-text bg-gradient-to-r from-red-600 via-pink-600 to-purple-600 bg-clip-text text-transparent"
                   animate={{
-                    textShadow: [
-                      '0 0 20px rgba(220, 20, 60, 0.5)',
-                      '0 0 40px rgba(236, 72, 153, 0.8)',
-                      '0 0 20px rgba(147, 51, 234, 0.5)',
-                    ],
+                    textShadow: '0 0 25px rgba(220, 20, 60, 0.4)',
                   }}
-                  transition={{ duration: 3, repeat: Infinity }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   侍
                 </motion.span>
                 <motion.span
                   className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-200 dark:to-white bg-clip-text text-transparent"
-                  animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
-                  transition={{ duration: 5, repeat: Infinity }}
+                  animate={{ backgroundPosition: ['0%', '200%', '0%'] }}
+                  transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
                   style={{ backgroundSize: '200% auto' }}
                 >
                   Shinmen Takezo Demo
@@ -197,9 +193,9 @@ export default function DemoPage() {
                   className="w-10 h-10"
                   animate={{
                     rotate: [0, 360],
-                    scale: [1, 1.2, 1],
+                    scale: [1, 1.1, 1],
                   }}
-                  transition={{ duration: 6, repeat: Infinity }}
+                  transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
                 />
                 <motion.div
                   className="h-px w-32 bg-gradient-to-r from-transparent via-red-600 to-transparent"
@@ -229,8 +225,8 @@ export default function DemoPage() {
                   {/* Floating kanji decoration */}
                   <motion.div
                     className="absolute top-4 right-4 text-6xl japanese-text text-indigo-800/10 dark:text-indigo-400/10 pointer-events-none select-none font-black"
-                    animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 4, repeat: Infinity }}
+                    animate={{ rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                   >
                     音
                   </motion.div>
@@ -334,8 +330,8 @@ export default function DemoPage() {
                   {/* Floating kanji decoration */}
                   <motion.div
                     className="absolute top-4 right-4 text-6xl japanese-text text-amber-800/10 dark:text-amber-400/10 pointer-events-none select-none font-black"
-                    animate={{ rotate: [0, -10, 10, 0] }}
-                    transition={{ duration: 4, repeat: Infinity }}
+                    animate={{ rotate: [0, -5, 5, 0] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                   >
                     字
                   </motion.div>
@@ -434,8 +430,8 @@ export default function DemoPage() {
                 {/* Floating kanji decoration */}
                 <motion.div
                   className="absolute top-4 right-4 text-6xl japanese-text text-purple-800/10 dark:text-purple-400/10 pointer-events-none select-none font-black"
-                  animate={{ rotate: [0, 15, -15, 0] }}
-                  transition={{ duration: 5, repeat: Infinity }}
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   知
                 </motion.div>

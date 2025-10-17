@@ -5,6 +5,10 @@
  */
 
 import axios from 'axios'
+import { aiLogger } from '../utils/logger'
+import { LogLevel } from '../utils/logger'
+
+const logger = aiLogger
 
 export interface AudioGenerationParams {
   text: string
@@ -70,9 +74,11 @@ async function generateAudioAzure(params: AudioGenerationParams): Promise<AudioG
     </voice>
   </speak>`
 
-  console.log(`🔊 Generating audio with Azure TTS...`)
-  console.log(`   Voice: ${voiceName}`)
-  console.log(`   Speed: ${params.speed} (${rateAdjustment})`)
+  logger.info('Generating audio with Azure TTS', {
+    voice: voiceName,
+    speed: params.speed,
+    rateAdjustment,
+  })
 
   try {
     const response = await axios.post(
@@ -100,7 +106,7 @@ async function generateAudioAzure(params: AudioGenerationParams): Promise<AudioG
     // Upload to storage (Supabase Storage or S3)
     const audioUrl = await uploadAudioFile(audioBuffer, generateFileName(params))
 
-    console.log(`✅ Audio generated: ${sizeKB}KB, ~${duration}s`)
+    logger.info('Audio generated successfully', { sizeKB, duration })
 
     return {
       url: audioUrl,
@@ -110,7 +116,9 @@ async function generateAudioAzure(params: AudioGenerationParams): Promise<AudioG
       voiceId: voiceName,
     }
   } catch (error) {
-    console.error('❌ Azure TTS error:', error)
+    logger.error('Azure TTS error', {
+      error: error instanceof Error ? error.message : String(error),
+    })
     if (axios.isAxiosError(error)) {
       throw new Error(`Azure TTS failed: ${error.response?.status} ${error.response?.statusText}`)
     }
@@ -119,7 +127,7 @@ async function generateAudioAzure(params: AudioGenerationParams): Promise<AudioG
 }
 
 async function generateMockAudio(params: AudioGenerationParams): Promise<AudioGenerationResult> {
-  console.log('🔊 Mock audio generation (Azure key not configured)')
+  logger.info('Mock audio generation (Azure key not configured)')
 
   // Return mock data for development
   const mockDuration = Math.max(2, params.text.length * 0.1)
@@ -168,7 +176,7 @@ async function uploadAudioFile(_buffer: Buffer, fileName: string): Promise<strin
 
   // For now, return a placeholder URL
   // TODO: Implement actual file upload
-  console.log(`📦 Mock upload: ${fileName}`)
+  logger.info('Mock upload', { fileName })
   return `https://storage.supabase.co/v1/object/public/audio/tts/${fileName}`
 }
 
@@ -264,7 +272,9 @@ export async function generateAudioGoogle(
       voiceId: voiceMap[params.speaker],
     }
   } catch (error) {
-    console.error('Google TTS error:', error)
+    logger.error('Google TTS error', {
+      error: error instanceof Error ? error.message : String(error),
+    })
     throw new Error('Google TTS generation failed')
   }
 }

@@ -90,7 +90,7 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
   return (
     <Link href={`/ssw/sectors/${sector.id}`} className="group relative block h-full">
       <motion.div
-        className="relative h-full rounded-3xl overflow-hidden bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 shadow-lg p-6"
+        className="relative h-full rounded-3xl overflow-hidden bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-2 border-gray-100 dark:border-gray-700 shadow-xl hover:shadow-2xl p-6 transition-all duration-300"
         variants={cardVariants}
         initial="initial"
         whileInView="animate"
@@ -102,7 +102,7 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
         {/* Enhanced Gradient Background on Hover */}
         <AnimatePresence>
           <motion.div
-            className={`absolute inset-0 bg-gradient-to-br ${sector.color} pointer-events-none`}
+            className={`absolute inset-0 bg-gradient-to-br ${sector.color} pointer-events-none rounded-3xl`}
             variants={gradientVariants}
             initial="initial"
             whileHover="hover"
@@ -111,7 +111,7 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
         </AnimatePresence>
 
         {/* Background Pattern */}
-        <div className="absolute inset-0 pointer-events-none opacity-5">
+        <div className="absolute inset-0 pointer-events-none opacity-5 rounded-3xl">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <pattern
               id={`pattern-${sector.id}`}
@@ -129,7 +129,7 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
 
         {/* Enhanced Japanese Text Background with Animation */}
         <motion.div
-          className="absolute top-4 right-4 text-7xl font-black pointer-events-none select-none"
+          className="absolute top-2 right-2 text-8xl font-black pointer-events-none select-none text-gray-900/5 dark:text-white/5 group-hover:text-gray-900/10 dark:group-hover:text-white/10 transition-all duration-300"
           variants={japaneseTextVariants}
           initial="initial"
           whileHover="hover"
@@ -140,7 +140,7 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
         <motion.div className="relative z-10 h-full flex flex-col" style={{ zIndex: 2 }}>
           {/* Enhanced Icon and Difficulty Badge */}
           <motion.div
-            className="flex items-start justify-between mb-4"
+            className="flex items-start justify-between mb-5"
             variants={{
               hover: {
                 y: -2,
@@ -155,28 +155,22 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
             whileHover="hover"
           >
             <motion.div
-              className="flex-shrink-0 w-16 h-16 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-2xl shadow-md"
+              className={`flex-shrink-0 w-20 h-20 flex items-center justify-center bg-gradient-to-br ${sector.color} rounded-3xl shadow-lg group-hover:shadow-xl transition-shadow duration-300`}
               variants={iconVariants}
             >
-              <span className="text-4xl">{sector.icon}</span>
+              <span className="text-5xl">{sector.icon}</span>
             </motion.div>
 
             <motion.span
-              className={`px-3 py-1 rounded-full text-xs font-bold ${
+              className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap ${
                 sector.difficulty === 'beginner'
-                  ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                  ? 'bg-green-100/80 dark:bg-green-900/40 text-green-700 dark:text-green-300 backdrop-blur-sm'
                   : sector.difficulty === 'intermediate'
-                    ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
-                    : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                    ? 'bg-amber-100/80 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 backdrop-blur-sm'
+                    : 'bg-red-100/80 dark:bg-red-900/40 text-red-700 dark:text-red-300 backdrop-blur-sm'
               }`}
               whileHover={{
-                scale: 1.05,
-                backgroundColor:
-                  sector.difficulty === 'beginner'
-                    ? 'rgba(34, 197, 94, 0.9)'
-                    : sector.difficulty === 'intermediate'
-                      ? 'rgba(234, 179, 8, 0.9)'
-                      : 'rgba(239, 68, 68, 0.9)',
+                scale: 1.08,
               }}
               transition={{
                 type: 'spring',
@@ -190,7 +184,7 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
 
           {/* Title with Staggered Animation */}
           <motion.h3
-            className="text-xl font-bold text-gray-900 dark:text-white mb-2"
+            className="text-2xl font-black bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent mb-2 group-hover:text-white transition-all duration-300"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -202,7 +196,7 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
 
           {/* Japanese Name */}
           <motion.p
-            className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3 japanese-text"
+            className="text-base font-bold text-gray-600 dark:text-gray-400 mb-3 japanese-text group-hover:text-white/90 transition-colors duration-300"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -214,7 +208,7 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
 
           {/* Description with Line Clamp */}
           <motion.p
-            className="text-sm text-gray-700 dark:text-gray-300 mb-4 line-clamp-2 flex-grow"
+            className="text-sm text-gray-700 dark:text-gray-300 mb-5 line-clamp-2 flex-grow leading-relaxed group-hover:text-white/80 transition-colors duration-300"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -226,23 +220,23 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
 
           {/* Stats with Staggered Animation */}
           <motion.div
-            className="flex flex-wrap gap-2 mb-4"
+            className="flex flex-wrap gap-3 mb-5"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.25 }}
           >
             <motion.span
-              className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-semibold"
-              whileHover={{ scale: 1.05, y: -2 }}
+              className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 text-blue-700 dark:text-blue-300 group-hover:text-white rounded-xl text-xs font-bold backdrop-blur-sm transition-all duration-300"
+              whileHover={{ scale: 1.08, y: -2 }}
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             >
               <span>📚</span>
               {sector.jlptLevel}
             </motion.span>
             <motion.span
-              className="inline-flex items-center gap-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg text-xs font-semibold"
-              whileHover={{ scale: 1.05, y: -2 }}
+              className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 text-purple-700 dark:text-purple-300 group-hover:text-white rounded-xl text-xs font-bold backdrop-blur-sm transition-all duration-300"
+              whileHover={{ scale: 1.08, y: -2 }}
               transition={{ type: 'spring', stiffness: 400, damping: 30, delay: 0.05 }}
             >
               <span>👥</span>
@@ -252,16 +246,16 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
 
           {/* Categories with Cascade Animation */}
           <motion.div
-            className="flex flex-wrap gap-1 mb-4"
+            className="flex flex-wrap gap-2 mb-5"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
           >
-            {sector.categories.map((cat, catIndex) => (
+            {sector.categories.slice(0, 2).map((cat, catIndex) => (
               <motion.span
                 key={cat}
-                className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs"
+                className="px-3 py-1 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-300 hover:text-white group-hover:text-white rounded-lg text-xs font-semibold backdrop-blur-sm transition-all duration-300"
                 initial={{ opacity: 0, x: -10 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -272,10 +266,8 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
                   damping: 30,
                 }}
                 whileHover={{
-                  scale: 1.05,
+                  scale: 1.08,
                   y: -2,
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  color: 'white',
                 }}
               >
                 {cat}
@@ -285,30 +277,28 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
 
           {/* Learn More Link with Enhanced Animation */}
           <motion.div
-            className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold text-sm mt-auto"
+            className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-sm mt-auto group-hover:text-white transition-colors duration-300"
             initial={{ opacity: 0, x: -10 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
             whileHover={{
               x: 5,
-              color: 'white',
               transition: {
                 x: { type: 'spring', stiffness: 400, damping: 30 },
-                color: { duration: 0.3 },
               },
             }}
             tabIndex={0}
             role="link"
             aria-label={`Learn more about ${sector.name} sector`}
           >
-            <span>Learn More</span>
+            <span>View Details</span>
             <motion.svg
-              className="w-4 h-4"
+              className="w-5 h-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              whileHover={{ x: 2 }}
+              whileHover={{ x: 3 }}
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -318,12 +308,12 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
 
         {/* Enhanced Decorative Element */}
         <motion.div
-          className="absolute -bottom-2 -right-2 text-4xl pointer-events-none"
+          className="absolute -bottom-4 -right-4 text-5xl pointer-events-none text-gray-900/5 dark:text-white/5 group-hover:text-gray-900/10 dark:group-hover:text-white/10 transition-all duration-300"
           initial={{ opacity: 0.1, rotate: 12 }}
           whileHover={{
             opacity: 0.2,
             rotate: 0,
-            scale: 1.2,
+            scale: 1.3,
           }}
           transition={{
             opacity: { duration: 0.5 },
@@ -336,23 +326,24 @@ export default function EnhancedSectorCard({ sector, index = 0 }: EnhancedSector
 
         {/* Floating Particles Animation */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
-          {[...Array(3)].map((_, i) => (
+          {[...Array(5)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-2 h-2 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full"
+              className="absolute w-2 h-2 bg-gradient-to-r from-pink-400/60 to-purple-400/60 rounded-full blur-sm"
               style={{
-                left: `${20 + i * 30}%`,
-                top: `${30 + i * 20}%`,
-                animationDelay: `${i * 0.5}s`,
+                left: `${20 + i * 15}%`,
+                top: `${30 + i * 15}%`,
               }}
               animate={{
-                y: [0, -20, 0],
-                opacity: [0.5, 1, 0.5],
+                y: [0, -25, 0],
+                opacity: [0.3, 0.8, 0.3],
+                scale: [0.8, 1.1, 0.8],
               }}
               transition={{
-                duration: 3 + i,
+                duration: 4 + i * 0.5,
                 repeat: Infinity,
                 ease: 'easeInOut',
+                delay: i * 0.1,
               }}
             />
           ))}

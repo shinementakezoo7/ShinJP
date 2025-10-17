@@ -30,7 +30,7 @@ export default function Home() {
                 <span className="japanese-text text-3xl sm:text-4xl text-red-700 dark:text-red-400 liquid-text-morph relative z-10 transition-all duration-300 group-hover:scale-110">
                   侍
                 </span>
-                <div className="absolute inset-0 bg-red-600/30 dark:bg-red-400/30 blur-xl rounded-full animate-pulse-slow"></div>
+                <div className="absolute inset-0 bg-red-600/30 dark:bg-red-400/30 blur-xl rounded-full"></div>
                 {/* Additional glow layers */}
                 <div className="absolute -inset-2 bg-gradient-to-r from-red-600/20 to-orange-600/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </div>
@@ -98,7 +98,7 @@ export default function Home() {
                   <span className="sm:hidden japanese-text font-bold">道</span>
                   <Image
                     src="/icons/torii.svg"
-                    alt=""
+                    alt="Decorative torii gate element"
                     width={16}
                     height={16}
                     className="w-4 h-4 opacity-90 group-hover:scale-110 transition-transform duration-300"
@@ -153,7 +153,7 @@ export default function Home() {
           </div>
 
           {/* Decorative Torii Gate */}
-          <div className="absolute top-10 right-10 opacity-5 dark:opacity-10 pointer-events-none animate-pulse-slow">
+          <div className="absolute top-10 right-10 opacity-5 dark:opacity-10 pointer-events-none">
             <Image
               src="/icons/torii.svg"
               alt="Torii background"

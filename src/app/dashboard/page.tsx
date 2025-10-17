@@ -8,6 +8,9 @@ import { useUserStore } from '@/stores/userStore'
 import { useDashboard } from '@/hooks/useDashboard'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { createStudySession, endStudySession } from '@/lib/database/functions/analytics'
+import { EnhancedStatCard } from '@/components/dashboard/EnhancedStatCard'
+import { EnhancedActivityCard } from '@/components/dashboard/EnhancedActivityCard'
+import { EnhancedQuickActionCard } from '@/components/dashboard/EnhancedQuickActionCard'
 
 // Dynamically import heavy dashboard widgets with skeleton fallbacks to improve
 // initial navigation responsiveness and reduce main bundle size.
@@ -40,6 +43,7 @@ const CherryBlossomScene = dynamic(() => import('@/components/japanese/CherryBlo
 export default function DashboardPageRedesigned() {
   // Keep mounted state only for client-side animations; do not gate initial render
   const [mounted, setMounted] = useState(false)
+  const [showCherryBlossoms, setShowCherryBlossoms] = useState(false)
   const [hoveredStat, setHoveredStat] = useState<number | null>(null)
   const [activeFilter, setActiveFilter] = useState('all')
   const [counters, setCounters] = useState({
@@ -56,6 +60,11 @@ export default function DashboardPageRedesigned() {
 
   useEffect(() => {
     setMounted(true)
+    // Show cherry blossoms after main content loads
+    const timer = setTimeout(() => {
+      setShowCherryBlossoms(true)
+    }, 800) // After main animations complete
+    return () => clearTimeout(timer)
   }, [])
 
   // Animate counters when stats arrive
@@ -66,9 +75,8 @@ export default function DashboardPageRedesigned() {
       vocabulary: stats.vocabularyLearned || 0,
       streak: stats.streakDays || 0,
     }
-    const timers: NodeJS.Timeout[] = [](
-      Object.keys(targets) as Array<'lessons' | 'vocabulary' | 'streak'>
-    ).forEach((key) => {
+    const timers: NodeJS.Timeout[] = []
+    ;(Object.keys(targets) as Array<'lessons' | 'vocabulary' | 'streak'>).forEach((key) => {
       let current = 0
       const target = targets[key]
       const steps = 40
@@ -293,8 +301,8 @@ export default function DashboardPageRedesigned() {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-950/20 dark:to-purple-950/10 motion-smooth">
-      {/* Enhanced Background Effects */}
-      <CherryBlossomScene />
+      {/* Enhanced Background Effects - Load after main content */}
+      {showCherryBlossoms && <CherryBlossomScene />}
 
       {/* Animated gradient orbs - do not block interactions */}
       <div
@@ -311,7 +319,7 @@ export default function DashboardPageRedesigned() {
         {/* Hero Section - Enhanced */}
         <section className="px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-10 sm:pb-12 content-auto">
           <div className="max-w-7xl mx-auto">
-            {/* Welcome Header */}
+            {/* Welcome Header - Enhanced */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -321,147 +329,85 @@ export default function DashboardPageRedesigned() {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                 <div>
                   <div className="flex items-center gap-4 mb-3">
-                    <span className="text-5xl animate-bounce-slow">👋</span>
+                    <motion.span
+                      className="text-5xl"
+                      animate={{ y: [0, -8, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      👋
+                    </motion.span>
                     <div>
                       <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-2">
                         Welcome back,{' '}
-                        <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-pulse">
                           Student
                         </span>
                       </h1>
                       <p className="text-lg text-gray-600 dark:text-gray-400 font-medium">
                         Your learning journey continues •{' '}
-                        <span className="japanese-text text-red-600 dark:text-red-400">道場</span>
+                        <span className="japanese-text text-red-600 dark:text-red-400 font-bold">
+                          道場
+                        </span>
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Quick Stats Summary */}
-                <div className="flex items-center gap-4 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 shadow-xl">
-                  <div className="text-center px-4 border-r border-gray-300 dark:border-gray-600">
-                    <div className="text-2xl font-black text-blue-600 dark:text-blue-400">24h</div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 font-semibold">
-                      Study Time
-                    </div>
-                  </div>
-                  <div className="text-center px-4 border-r border-gray-300 dark:border-gray-600">
-                    <div className="text-2xl font-black text-purple-600 dark:text-purple-400">
-                      85%
-                    </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 font-semibold">
-                      Accuracy
-                    </div>
-                  </div>
-                  <div className="text-center px-4">
-                    <div className="text-2xl font-black text-green-600 dark:text-green-400">
-                      #12
-                    </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 font-semibold">
-                      Rank
-                    </div>
-                  </div>
-                </div>
+                {/* Quick Stats Summary - Enhanced */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="flex items-center gap-4 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 shadow-xl hover:shadow-2xl transition-all"
+                >
+                  {[
+                    {
+                      value: '24h',
+                      label: 'Study Time',
+                      color: 'text-blue-600 dark:text-blue-400',
+                    },
+                    {
+                      value: '85%',
+                      label: 'Accuracy',
+                      color: 'text-purple-600 dark:text-purple-400',
+                    },
+                    { value: '#12', label: 'Rank', color: 'text-green-600 dark:text-green-400' },
+                  ].map((stat, index) => (
+                    <motion.div
+                      key={stat.label}
+                      className="text-center px-4 border-r border-gray-300 dark:border-gray-600 last:border-r-0"
+                      whileHover={{ scale: 1.08, y: -2 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    >
+                      <div className={`text-2xl font-black ${stat.color}`}>{stat.value}</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400 font-semibold">
+                        {stat.label}
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
               </div>
             </motion.div>
 
             {/* Enhanced Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
-              {stats.map((stat, index) => (
-                <motion.div
+              {statsCards.map((stat, index) => (
+                <EnhancedStatCard
                   key={stat.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  onHoverStart={() => setHoveredStat(stat.id)}
-                  onHoverEnd={() => setHoveredStat(null)}
-                >
-                  <Link href={stat.link}>
-                    <div className="group relative h-full motion-smooth">
-                      {/* Glow effect */}
-                      <div
-                        className={`absolute -inset-1 ${stat.bgGlow} rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                      />
-
-                      <div className="relative h-full p-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-2xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 shadow-xl hover:shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:-translate-y-2">
-                        {/* Header */}
-                        <div className="flex items-start justify-between mb-6">
-                          <div
-                            className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-3xl shadow-lg transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-500`}
-                          >
-                            {stat.icon}
-                          </div>
-
-                          {/* Trend Badge */}
-                          <div
-                            className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${stat.trendUp ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'}`}
-                          >
-                            <span>{stat.trendUp ? '↑' : '↓'}</span>
-                            <span>{stat.trend}</span>
-                          </div>
-                        </div>
-
-                        {/* Value */}
-                        <div className="mb-4">
-                          <div className="flex items-baseline gap-2 mb-2">
-                            <span
-                              className={`text-5xl font-black bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`}
-                            >
-                              {stat.value}
-                            </span>
-                            <span className="text-3xl japanese-text text-gray-400 dark:text-gray-500">
-                              {stat.kanji}
-                            </span>
-                          </div>
-                          <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
-                            {stat.name}
-                          </h3>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                            {stat.subtext}
-                          </p>
-                        </div>
-
-                        {/* Progress Bar */}
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-xs font-semibold text-gray-600 dark:text-gray-400">
-                            <span>Progress</span>
-                            <span>{stat.progress}%</span>
-                          </div>
-                          <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: `${stat.progress}%` }}
-                              transition={{ duration: 1, delay: index * 0.1 + 0.5 }}
-                              className={`h-full bg-gradient-to-r ${stat.color} rounded-full`}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Hover Arrow */}
-                        <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1">
-                          <svg
-                            className="w-6 h-6 text-gray-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={3}
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M17 8l4 4m0 0l-4 4m4-4H3"
-                            />
-                          </svg>
-                        </div>
-
-                        {/* Background Kanji */}
-                        <div className="absolute bottom-2 right-2 text-8xl japanese-text text-gray-100 dark:text-gray-800 opacity-50 pointer-events-none select-none font-black">
-                          {stat.kanji}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
+                  id={stat.id}
+                  name={stat.name}
+                  value={stat.value}
+                  kanji={stat.kanji}
+                  subtext={stat.subtext}
+                  link={stat.link}
+                  icon={stat.icon}
+                  color={stat.color}
+                  bgGlow={stat.bgGlow}
+                  progress={stat.progress}
+                  trend={stat.trend}
+                  trendUp={stat.trendUp}
+                  index={index}
+                />
               ))}
             </div>
           </div>
@@ -494,120 +440,44 @@ export default function DashboardPageRedesigned() {
                       </div>
                     </div>
 
-                    {/* Filter Buttons */}
-                    <div className="flex items-center gap-2 p-1 bg-gray-200 dark:bg-gray-800 rounded-xl">
+                    {/* Filter Buttons - Enhanced */}
+                    <motion.div className="flex items-center gap-2 p-1 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-xl">
                       {['all', 'lessons', 'practice'].map((filter) => (
-                        <button
+                        <motion.button
                           key={filter}
                           onClick={() => setActiveFilter(filter)}
                           className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                             activeFilter === filter
-                              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-md'
+                              ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-md'
                               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                           }`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                         >
                           {filter.charAt(0).toUpperCase() + filter.slice(1)}
-                        </button>
+                        </motion.button>
                       ))}
-                    </div>
+                    </motion.div>
                   </div>
 
                   {/* Activity Timeline */}
                   <div className="space-y-4">
                     <AnimatePresence>
                       {activities.map((activity, index) => (
-                        <motion.div
+                        <EnhancedActivityCard
                           key={activity.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          transition={{ duration: 0.3, delay: index * 0.1 }}
-                          className="group relative"
-                        >
-                          <div className="relative p-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
-                            <div className="flex items-center gap-5">
-                              {/* Icon */}
-                              <div
-                                className={`flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-lg transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 ${
-                                  activity.color === 'blue'
-                                    ? 'bg-gradient-to-br from-blue-500 to-cyan-500'
-                                    : activity.color === 'green'
-                                      ? 'bg-gradient-to-br from-green-500 to-emerald-500'
-                                      : activity.color === 'purple'
-                                        ? 'bg-gradient-to-br from-purple-500 to-pink-500'
-                                        : 'bg-gradient-to-br from-orange-500 to-red-500'
-                                }`}
-                              >
-                                {activity.icon}
-                              </div>
-
-                              {/* Content */}
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-4 mb-2">
-                                  <h3 className="font-bold text-lg text-gray-900 dark:text-white">
-                                    {activity.title}
-                                  </h3>
-                                  <span className="text-xs font-bold px-3 py-1 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-full whitespace-nowrap">
-                                    {activity.type}
-                                  </span>
-                                </div>
-
-                                <div className="flex items-center gap-4 text-sm">
-                                  {activity.score && (
-                                    <div className="flex items-center gap-2">
-                                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-md">
-                                        <span className="text-white font-black text-sm">
-                                          {activity.score}
-                                        </span>
-                                      </div>
-                                      <span className="text-gray-600 dark:text-gray-400 font-medium">
-                                        Score
-                                      </span>
-                                    </div>
-                                  )}
-                                  <span className="text-gray-400">•</span>
-                                  <span className="text-gray-600 dark:text-gray-400 font-medium">
-                                    {activity.time}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Action Buttons */}
-                              <div className="flex-shrink-0 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:scale-110 transition-transform">
-                                  <svg
-                                    className="w-5 h-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                    />
-                                  </svg>
-                                </button>
-                                <button className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:scale-110 transition-transform">
-                                  <svg
-                                    className="w-5 h-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                                    />
-                                  </svg>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
+                          id={activity.id}
+                          title={activity.title}
+                          type={activity.type}
+                          score={activity.score}
+                          time={activity.time}
+                          icon={activity.icon}
+                          colorGradient={activity.color}
+                          index={index}
+                          onRetry={() => console.log(`Retry ${activity.id}`)}
+                          onShare={() => console.log(`Share ${activity.id}`)}
+                        />
                       ))}
                     </AnimatePresence>
 
@@ -661,69 +531,17 @@ export default function DashboardPageRedesigned() {
                   {/* Action Cards */}
                   <div className="space-y-4">
                     {quickActions.map((action, index) => (
-                      <motion.div
+                      <EnhancedQuickActionCard
                         key={action.name}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
-                      >
-                        <Link href={action.link}>
-                          <div className="group relative">
-                            {action.recommended && (
-                              <div className="absolute -top-3 -right-3 z-10 px-3 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold rounded-full shadow-lg animate-bounce-slow">
-                                ⭐ Recommended
-                              </div>
-                            )}
-
-                            <div className="relative p-5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                              <div className="flex items-center gap-4 mb-4">
-                                <div
-                                  className={`flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center text-2xl shadow-lg group-hover:scale-125 group-hover:-rotate-12 transition-all duration-500`}
-                                >
-                                  {action.icon}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-1">
-                                    {action.name}
-                                  </h3>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {action.description}
-                                  </p>
-                                </div>
-                                <svg
-                                  className="w-6 h-6 text-gray-400 group-hover:translate-x-2 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all flex-shrink-0"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                  strokeWidth={3}
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                                  />
-                                </svg>
-                              </div>
-
-                              {/* Progress */}
-                              {action.progress > 0 && (
-                                <div className="space-y-1">
-                                  <div className="flex items-center justify-between text-xs font-semibold text-gray-600 dark:text-gray-400">
-                                    <span>In Progress</span>
-                                    <span>{action.progress}%</span>
-                                  </div>
-                                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                    <div
-                                      className={`h-full bg-gradient-to-r ${action.gradient} rounded-full transition-all duration-1000`}
-                                      style={{ width: `${action.progress}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </Link>
-                      </motion.div>
+                        name={action.name}
+                        icon={action.icon}
+                        link={action.link}
+                        description={action.description}
+                        gradient={action.gradient}
+                        progress={action.progress}
+                        recommended={action.recommended}
+                        index={index}
+                      />
                     ))}
                   </div>
 

@@ -2604,3 +2604,231 @@ a:focus-visible {
     @apply bg-background text-foreground;
   }
 }
+
+/* Enhanced Showcase Animations */
+@keyframes parallax-float {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  50% {
+    transform: translateY(-10px) translateX(-10px);
+  }
+  75% {
+    transform: translateY(-30px) translateX(5px);
+  }
+}
+
+@keyframes glow-pulse-slow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(220, 20, 60, 0.6);
+  }
+}
+
+@keyframes text-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) skewY(-5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) skewY(0);
+  }
+}
+
+@keyframes card-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes filter-slide {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes hero-kanji-float {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-10px) translateX(5px) rotate(1deg);
+  }
+  66% {
+    transform: translateY(-5px) translateX(-5px) rotate(-1deg);
+  }
+}
+
+/* Animation Classes */
+.animate-parallax-float {
+  animation: parallax-float 8s ease-in-out infinite;
+}
+
+.animate-glow-pulse-slow {
+  animation: glow-pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-text-reveal {
+  animation: text-reveal 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-card-entrance {
+  animation: card-entrance 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-filter-slide {
+  animation: filter-slide 0.5s ease-out forwards;
+}
+
+.animate-hero-kanji-float {
+  animation: hero-kanji-float 6s ease-in-out infinite;
+}
+
+/* Enhanced Hover Effects */
+.showcase-card-hover {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.showcase-card-hover:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(220, 20, 60, 0.15);
+}
+
+.showcase-card-hover:hover .card-image {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.showcase-card-hover:hover .card-title {
+  background: linear-gradient(135deg, var(--beni-red), var(--daidai-orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Filter Button Styles */
+.filter-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.6s,
+    height 0.6s;
+}
+
+.filter-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.filter-button.active {
+  background: linear-gradient(135deg, var(--beni-red), var(--murasaki-purple));
+  color: white;
+  box-shadow: 0 8px 24px rgba(220, 20, 60, 0.3);
+}
+
+/* Hero Section Enhancements */
+.hero-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.dark .hero-gradient-overlay {
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.2) 0%, transparent 70%);
+}
+
+/* Sticky Filter Animation */
+.filter-sticky {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 8px 32px rgba(220, 20, 60, 0.1);
+}
+
+.dark .filter-sticky {
+  box-shadow: 0 8px 32px rgba(255, 107, 107, 0.15);
+}
+
+/* Mobile Touch Optimizations */
+@media (max-width: 768px) {
+  .filter-button {
+    padding: 12px 20px;
+    font-size: 16px;
+    min-height: 48px; /* Recommended touch target size */
+  }
+
+  .showcase-card-hover {
+    transition: transform 0.3s ease;
+  }
+
+  .showcase-card-hover:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-parallax-float,
+  .animate-glow-pulse-slow,
+  .animate-text-reveal,
+  .animate-card-entrance,
+  .animate-filter-slide,
+  .animate-hero-kanji-float {
+    animation: none;
+  }
+
+  .showcase-card-hover {
+    transition: none;
+  }
+
+  .showcase-card-hover:hover {
+    transform: none;
+  }
+}
+
+/* Performance Optimizations */
+.showcase-grid {
+  contain: layout style paint;
+}
+
+.showcase-item {
+  will-change: transform;
+  contain: layout style paint;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}

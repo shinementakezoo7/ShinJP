@@ -68,12 +68,8 @@ export default function JapaneseLiquidHero() {
     []
   )
 
-  // Use subset based on mobile state
-  const koiFish = mounted
-    ? reducedMotion
-      ? []
-      : allKoiFish.slice(0, isMobile ? 3 : 5)
-    : allKoiFish
+  // Use subset based on mobile state - ensure consistent initial render
+  const koiFish = reducedMotion ? [] : allKoiFish.slice(0, isMobile ? 3 : 5)
 
   // Generate sparkles with stable values (max count for hydration consistency)
   const allSparkles = useMemo(
@@ -89,12 +85,8 @@ export default function JapaneseLiquidHero() {
     []
   )
 
-  // Use subset based on mobile state
-  const sparkles = mounted
-    ? reducedMotion
-      ? []
-      : allSparkles.slice(0, isMobile ? 15 : 25)
-    : allSparkles
+  // Use subset based on mobile state - ensure consistent initial render
+  const sparkles = reducedMotion ? [] : allSparkles.slice(0, isMobile ? 15 : 25)
 
   return (
     <section
@@ -105,20 +97,22 @@ export default function JapaneseLiquidHero() {
     >
       {/* Animated Koi Fish Background Layer */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        {koiFish.map((fish) => (
-          <div
-            key={fish.id}
-            className="absolute w-16 h-16 animate-koi-swim"
-            style={{
-              left: `${fish.left}%`,
-              animationDelay: `${fish.animationDelay}s`,
-              animationDuration: `${fish.duration}s`,
-              transform: `scale(${fish.scale})`,
-            }}
-          >
-            <div className="text-5xl opacity-20 dark:opacity-10 drop-shadow-lg">🐟</div>
-          </div>
-        ))}
+        {mounted &&
+          !reducedMotion &&
+          koiFish.map((fish) => (
+            <div
+              key={fish.id}
+              className="absolute w-16 h-16 animate-koi-swim"
+              style={{
+                left: `${fish.left}%`,
+                animationDelay: `${fish.animationDelay}s`,
+                animationDuration: `${fish.duration}s`,
+                transform: `scale(${fish.scale})`,
+              }}
+            >
+              <div className="text-5xl opacity-20 dark:opacity-10 drop-shadow-lg">🐟</div>
+            </div>
+          ))}
       </div>
 
       {/* Mount Fuji Silhouette */}
@@ -272,39 +266,42 @@ export default function JapaneseLiquidHero() {
 
       {/* Enhanced Floating Sakura Petals with Variety */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        {(!reducedMotion ? [...Array(isMobile ? 10 : 18)] : []).map((_, i) => (
-          <div
-            key={i}
-            className="absolute animate-sakura-float"
-            style={{
-              left: `${(i * 5.5) % 100}%`,
-              animationDelay: `${i * 0.6}s`,
-              animationDuration: `${12 + i * 1.5}s`,
-              transform: `scale(${0.8 + (i % 3) * 0.2})`,
-            }}
-          >
+        {mounted &&
+          !reducedMotion &&
+          [...Array(isMobile ? 10 : 18)].map((_, i) => (
             <div
-              className="text-2xl sm:text-4xl opacity-40 dark:opacity-25 transition-transform hover:scale-110"
+              key={i}
+              className="absolute animate-sakura-float"
               style={{
-                filter: `hue-rotate(${i * 15}deg) brightness(1.1)`,
-                textShadow: '0 2px 8px rgba(255, 182, 193, 0.5)',
+                left: `${(i * 5.5) % 100}%`,
+                animationDelay: `${i * 0.6}s`,
+                animationDuration: `${12 + i * 1.5}s`,
+                transform: `scale(${0.8 + (i % 3) * 0.2})`,
               }}
             >
-              {i % 3 === 0 ? (
-                <img src="/icons/sakura.svg" alt="Sakura" className="w-6 h-6 opacity-70" />
-              ) : i % 3 === 1 ? (
-                <img src="/icons/leaf.svg" alt="Leaf" className="w-6 h-6 opacity-70" />
-              ) : (
-                <img src="/icons/sakura.svg" alt="Flower" className="w-6 h-6 opacity-70" />
-              )}
+              <div
+                className="text-2xl sm:text-4xl opacity-40 dark:opacity-25 transition-transform hover:scale-110"
+                style={{
+                  filter: `hue-rotate(${i * 15}deg) brightness(1.1)`,
+                  textShadow: '0 2px 8px rgba(255, 182, 193, 0.5)',
+                }}
+              >
+                {i % 3 === 0 ? (
+                  <img src="/icons/sakura.svg" alt="Sakura" className="w-6 h-6 opacity-70" />
+                ) : i % 3 === 1 ? (
+                  <img src="/icons/leaf.svg" alt="Leaf" className="w-6 h-6 opacity-70" />
+                ) : (
+                  <img src="/icons/sakura.svg" alt="Flower" className="w-6 h-6 opacity-70" />
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
 
       {/* Animated Lanterns */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        {!isMobile &&
+        {mounted &&
+          !isMobile &&
           !reducedMotion &&
           [...Array(4)].map((_, i) => (
             <div
@@ -339,20 +336,22 @@ export default function JapaneseLiquidHero() {
 
       {/* Ambient Sparkles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        {sparkles.map((sparkle) => (
-          <div
-            key={sparkle.id}
-            className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
-            style={{
-              left: `${sparkle.left}%`,
-              top: `${sparkle.top}%`,
-              animationDelay: `${sparkle.animationDelay}s`,
-              animationDuration: `${sparkle.animationDuration}s`,
-              opacity: sparkle.opacity,
-              boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
-            }}
-          />
-        ))}
+        {mounted &&
+          !reducedMotion &&
+          sparkles.map((sparkle) => (
+            <div
+              key={sparkle.id}
+              className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+              style={{
+                left: `${sparkle.left}%`,
+                top: `${sparkle.top}%`,
+                animationDelay: `${sparkle.animationDelay}s`,
+                animationDuration: `${sparkle.animationDuration}s`,
+                opacity: sparkle.opacity,
+                boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
+              }}
+            />
+          ))}
       </div>
 
       {/* Main Content */}
@@ -450,31 +449,11 @@ export default function JapaneseLiquidHero() {
             <div className="flex items-center justify-center gap-3 sm:gap-6 my-8 sm:my-10 animate-fade-in stagger-1">
               <div className="h-px w-20 sm:w-32 bg-gradient-to-r from-transparent via-red-600 dark:via-red-400 to-transparent"></div>
               <span className="text-2xl sm:text-3xl japanese-text text-red-700 dark:text-red-400 animate-bounce-slow relative">
-                {new Date().getMonth() >= 3 && new Date().getMonth() <= 5 ? (
-                  <img
-                    src="/icons/sakura.svg"
-                    alt="Sakura"
-                    className="w-8 h-8 sm:w-10 sm:h-10 inline drop-shadow-lg hover:scale-125 transition-transform duration-300"
-                  />
-                ) : new Date().getMonth() >= 6 && new Date().getMonth() <= 8 ? (
-                  <img
-                    src="/icons/leaf.svg"
-                    alt="Bamboo"
-                    className="w-8 h-8 sm:w-10 sm:h-10 inline drop-shadow-lg hover:scale-125 transition-transform duration-300"
-                  />
-                ) : new Date().getMonth() >= 9 && new Date().getMonth() <= 11 ? (
-                  <img
-                    src="/icons/leaf.svg"
-                    alt="Maple"
-                    className="w-8 h-8 sm:w-10 sm:h-10 inline drop-shadow-lg hover:scale-125 transition-transform duration-300"
-                  />
-                ) : (
-                  <img
-                    src="/icons/sakura.svg"
-                    alt="Snowflake"
-                    className="w-8 h-8 sm:w-10 sm:h-10 inline drop-shadow-lg hover:scale-125 transition-transform duration-300"
-                  />
-                )}
+                <img
+                  src="/icons/sakura.svg"
+                  alt="Seasonal element"
+                  className="w-8 h-8 sm:w-10 sm:h-10 inline drop-shadow-lg hover:scale-125 transition-transform duration-300"
+                />
                 <div className="absolute -inset-2 bg-red-500/20 blur-xl rounded-full -z-10"></div>
               </span>
               <div className="h-px w-20 sm:w-32 bg-gradient-to-r from-transparent via-red-600 dark:via-red-400 to-transparent"></div>
@@ -620,7 +599,7 @@ export default function JapaneseLiquidHero() {
 
                   <div className="relative z-10">
                     {/* Number with enhanced animation */}
-                    <div className="text-6xl sm:text-7xl md:text-8xl font-black liquid-gradient-text bg-gradient-to-br from-red-700 via-orange-600 to-amber-600 dark:from-red-400 dark:via-orange-400 dark:to-amber-400 mb-4 animate-number-count group-hover:scale-110 transition-transform duration-300">
+                    <div className="text-6xl sm:text-7xl md:text-8xl font-black liquid-gradient-text bg-gradient-to-br from-red-700 via-orange-600 to-amber-600 dark:from-red-400 dark:via-orange-400 dark:to-amber-400 mb-4 group-hover:scale-110 transition-transform duration-300">
                       5
                     </div>
 
@@ -655,10 +634,7 @@ export default function JapaneseLiquidHero() {
 
                   <div className="relative z-10">
                     {/* Number with enhanced animation */}
-                    <div
-                      className="text-6xl sm:text-7xl md:text-8xl font-black liquid-gradient-text bg-gradient-to-br from-amber-700 via-orange-600 to-red-600 dark:from-amber-400 dark:via-orange-400 dark:to-red-400 mb-4 animate-number-count group-hover:scale-110 transition-transform duration-300"
-                      style={{ animationDelay: '0.15s' }}
-                    >
+                    <div className="text-6xl sm:text-7xl md:text-8xl font-black liquid-gradient-text bg-gradient-to-br from-amber-700 via-orange-600 to-red-600 dark:from-amber-400 dark:via-orange-400 dark:to-red-400 mb-4 group-hover:scale-110 transition-transform duration-300">
                       1K+
                     </div>
 
@@ -674,10 +650,7 @@ export default function JapaneseLiquidHero() {
 
                     {/* Progress bar decoration */}
                     <div className="mt-4 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-amber-600 to-red-600 rounded-full w-0 group-hover:w-full transition-all duration-1000 ease-out"
-                        style={{ transitionDelay: '0.1s' }}
-                      ></div>
+                      <div className="h-full bg-gradient-to-r from-amber-600 to-red-600 rounded-full w-0 group-hover:w-full transition-all duration-1000 ease-out"></div>
                     </div>
                   </div>
                 </div>
@@ -696,10 +669,7 @@ export default function JapaneseLiquidHero() {
 
                   <div className="relative z-10">
                     {/* Number with enhanced animation */}
-                    <div
-                      className="text-6xl sm:text-7xl md:text-8xl font-black liquid-gradient-text bg-gradient-to-br from-orange-700 via-red-600 to-amber-600 dark:from-orange-400 dark:via-red-400 dark:to-amber-400 mb-4 animate-number-count group-hover:scale-110 transition-transform duration-300"
-                      style={{ animationDelay: '0.3s' }}
-                    >
+                    <div className="text-6xl sm:text-7xl md:text-8xl font-black liquid-gradient-text bg-gradient-to-br from-orange-700 via-red-600 to-amber-600 dark:from-orange-400 dark:via-red-400 dark:to-amber-400 mb-4 group-hover:scale-110 transition-transform duration-300">
                       AI
                     </div>
 
@@ -715,10 +685,7 @@ export default function JapaneseLiquidHero() {
 
                     {/* Progress bar decoration */}
                     <div className="mt-4 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-orange-600 to-amber-600 rounded-full w-0 group-hover:w-full transition-all duration-1000 ease-out"
-                        style={{ transitionDelay: '0.2s' }}
-                      ></div>
+                      <div className="h-full bg-gradient-to-r from-orange-600 to-amber-600 rounded-full w-0 group-hover:w-full transition-all duration-1000 ease-out"></div>
                     </div>
                   </div>
                 </div>

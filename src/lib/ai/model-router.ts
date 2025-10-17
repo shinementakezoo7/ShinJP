@@ -1,4 +1,6 @@
 import { type NVIDIARequest, nvidiaClient } from './nvidia-client'
+import { aiLogger } from '../utils/logger'
+import { LogLevel } from '../utils/logger'
 
 // Model types for different tasks
 export enum ModelTask {
@@ -70,6 +72,8 @@ interface ModelRouterResponse {
   }
 }
 
+const logger = aiLogger
+
 class ModelRouter {
   private modelIndices: Map<ModelTask, number> = new Map()
 
@@ -95,68 +99,36 @@ class ModelRouter {
    * Route request to appropriate NVIDIA model
    */
   async route(request: ModelRouterRequest): Promise<ModelRouterResponse> {
-    const model = this.getModelForTask(request.task)
+    // Check if we have NVIDIA available
+    const hasNvidia = nvidiaClient.isAvailable()
+    const hasOpenAI = Boolean(process.env.OPENAI_API_KEY)
 
-    console.log(`🎯 Routing task "${request.task}" to NVIDIA model: ${model}`)
+    logger.info(`Routing task "${request.task}"`, { hasNvidia, hasOpenAI })
 
-    if (!nvidiaClient.isAvailable()) {
-      throw new Error(
-        'NVIDIA API is not configured. Please set NVIDIA_API_KEY_1 environment variable.'
-      )
-    }
+    // If NVIDIA is available, use it
+    if (hasNvidia) {
+      const model = this.getModelForTask(request.task)
+      logger.info(`Routing task "${request.task}" to NVIDIA model: ${model}`, { model })
 
-    try {
-      // Use 122K context window for stockmark-2-100b-instruct
-      const maxTokens =
-        model === 'stockmark/stockmark-2-100b-instruct'
-          ? request.maxTokens || 8000 // Increased default for stockmark
-          : request.maxTokens || 4000
-
-      const nvidiaRequest: NVIDIARequest = {
-        model,
-        messages: request.messages,
-        temperature: request.temperature || 0.7,
-        max_tokens: maxTokens,
-      }
-
-      const response = await nvidiaClient.chatCompletion(nvidiaRequest)
-
-      return {
-        content: response.choices[0]?.message?.content || '',
-        model,
-        provider: 'nvidia',
-        usage: {
-          promptTokens: response.usage.prompt_tokens,
-          completionTokens: response.usage.completion_tokens,
-          totalTokens: response.usage.total_tokens,
-        },
-      }
-    } catch (error) {
-      console.error('❌ NVIDIA API request failed:', error)
-
-      // If one model fails, try fallback model for the task
-      const models = MODEL_ROUTES[request.task]
-      if (models.length > 1) {
-        console.log('🔄 Trying fallback model...')
-        const fallbackModel = models[1]
-
-        const fallbackMaxTokens =
-          fallbackModel === 'stockmark/stockmark-2-100b-instruct'
-            ? request.maxTokens || 8000
+      try {
+        // Use 122K context window for stockmark-2-100b-instruct
+        const maxTokens =
+          model === 'stockmark/stockmark-2-100b-instruct'
+            ? request.maxTokens || 8000 // Increased default for stockmark
             : request.maxTokens || 4000
 
         const nvidiaRequest: NVIDIARequest = {
-          model: fallbackModel,
+          model,
           messages: request.messages,
           temperature: request.temperature || 0.7,
-          max_tokens: fallbackMaxTokens,
+          max_tokens: maxTokens,
         }
 
         const response = await nvidiaClient.chatCompletion(nvidiaRequest)
 
         return {
           content: response.choices[0]?.message?.content || '',
-          model: fallbackModel,
+          model,
           provider: 'nvidia',
           usage: {
             promptTokens: response.usage.prompt_tokens,
@@ -164,10 +136,65 @@ class ModelRouter {
             totalTokens: response.usage.total_tokens,
           },
         }
-      }
+      } catch (error) {
+        logger.error('NVIDIA API request failed', {
+          error: error instanceof Error ? error.message : String(error),
+          task: request.task,
+        })
 
-      throw new Error(`NVIDIA API failed for task ${request.task}: ${error}`)
+        // If one model fails, try fallback model for the task
+        const models = MODEL_ROUTES[request.task]
+        if (models.length > 1) {
+          logger.info('Trying fallback model...', { task: request.task })
+          const fallbackModel = models[1]
+
+          const fallbackMaxTokens =
+            fallbackModel === 'stockmark/stockmark-2-100b-instruct'
+              ? request.maxTokens || 8000
+              : request.maxTokens || 4000
+
+          const nvidiaRequest: NVIDIARequest = {
+            model: fallbackModel,
+            messages: request.messages,
+            temperature: request.temperature || 0.7,
+            max_tokens: fallbackMaxTokens,
+          }
+
+          const response = await nvidiaClient.chatCompletion(nvidiaRequest)
+
+          return {
+            content: response.choices[0]?.message?.content || '',
+            model: fallbackModel,
+            provider: 'nvidia',
+            usage: {
+              promptTokens: response.usage.prompt_tokens,
+              completionTokens: response.usage.completion_tokens,
+              totalTokens: response.usage.total_tokens,
+            },
+          }
+        }
+
+        // If we have OpenAI as fallback, try that
+        if (hasOpenAI) {
+          logger.info('Falling back to OpenAI...', { task: request.task })
+          return await this.routeToOpenAI(request)
+        }
+
+        throw new Error(
+          `NVIDIA API failed for task ${request.task}: ${error instanceof Error ? error.message : String(error)}`
+        )
+      }
     }
+
+    // If only OpenAI is available, use it
+    if (hasOpenAI) {
+      logger.info(`Routing task "${request.task}" to OpenAI`, { task: request.task })
+      return await this.routeToOpenAI(request)
+    }
+
+    throw new Error(
+      'No AI providers configured. Please set NVIDIA_API_KEY(_1/_2) or OPENAI_API_KEY.'
+    )
   }
 
   /**
@@ -275,6 +302,51 @@ Format as JSON: {"title": "...", "explanation": "...", "examples": [...], "relat
 
       default:
         return `Provide Japanese language learning content for JLPT N${jlptLevel} level about: ${topicText}`
+    }
+  }
+
+  /**
+   * Route request to OpenAI as fallback
+   */
+  private async routeToOpenAI(request: ModelRouterRequest): Promise<ModelRouterResponse> {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OpenAI API key not configured')
+    }
+
+    try {
+      // Dynamic import to avoid issues when OpenAI is not configured
+      const { openai } = await import('./openai-client')
+
+      if (!openai) {
+        throw new Error('OpenAI client not initialized')
+      }
+
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4o-mini', // Default fallback model
+        messages: request.messages as any,
+        temperature: request.temperature || 0.7,
+        max_tokens: request.maxTokens || 4000,
+      })
+
+      const choice = response.choices[0]
+      return {
+        content: choice?.message?.content || '',
+        model: response.model,
+        provider: 'openai',
+        usage: {
+          promptTokens: response.usage?.prompt_tokens || 0,
+          completionTokens: response.usage?.completion_tokens || 0,
+          totalTokens: response.usage?.total_tokens || 0,
+        },
+      }
+    } catch (error) {
+      logger.error('OpenAI API request failed', {
+        error: error instanceof Error ? error.message : String(error),
+        task: request.task,
+      })
+      throw new Error(
+        `OpenAI API failed: ${error instanceof Error ? error.message : String(error)}`
+      )
     }
   }
 

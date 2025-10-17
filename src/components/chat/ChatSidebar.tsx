@@ -1,307 +1,347 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
-interface Conversation {
-  id: string
-  title: string
-  message_count: number
-  last_message_at: string
-  created_at: string
-}
+import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ChatRoom, User } from '@/lib/websocket/types'
+import { formatDistanceToNow } from 'date-fns'
+import { ja } from 'date-fns/locale'
+import Image from 'next/image'
+import { Hash, Lock, Users, Clock, MoreVertical, Pin, Volume2, Search } from 'lucide-react'
 
 interface ChatSidebarProps {
-  currentConversationId: string | null
-  onSelectConversation: (id: string) => void
-  onNewConversation: () => void
-  onDeleteConversation: (id: string) => void
+  activeRoom: ChatRoom
+  onRoomChange: (room: ChatRoom) => void
+  currentUser: User
 }
 
-export default function ChatSidebar({
-  currentConversationId,
-  onSelectConversation,
-  onNewConversation,
-  onDeleteConversation,
-}: ChatSidebarProps) {
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isCollapsed, setIsCollapsed] = useState(false)
+const MOCK_ROOMS: ChatRoom[] = [
+  {
+    id: 'main-chat-room',
+    name: 'メインチャット',
+    description: '一般的な日本語学習ディスカッション',
+    type: 'channel',
+    isPrivate: false,
+    unreadCount: 0,
+    participants: [],
+    createdAt: new Date(),
+    avatar: '/api/placeholder/40/40',
+  },
+  {
+    id: 'jlpt-n5',
+    name: 'JLPT N5',
+    description: '初級日本語学習者のための空間',
+    type: 'channel',
+    isPrivate: false,
+    unreadCount: 3,
+    participants: [],
+    createdAt: new Date(),
+    avatar: '/api/placeholder/40/40',
+  },
+  {
+    id: 'jlpt-n4',
+    name: 'JLPT N4',
+    description: '基礎日本語学習者のための空間',
+    type: 'channel',
+    isPrivate: false,
+    unreadCount: 0,
+    participants: [],
+    createdAt: new Date(),
+    avatar: '/api/placeholder/40/40',
+  },
+  {
+    id: 'jlpt-n3',
+    name: 'JLPT N3',
+    description: '中級日本語学習者のための空間',
+    type: 'channel',
+    isPrivate: false,
+    unreadCount: 1,
+    participants: [],
+    createdAt: new Date(),
+    avatar: '/api/placeholder/40/40',
+  },
+  {
+    id: 'jlpt-n2',
+    name: 'JLPT N2',
+    description: '上級日本語学習者のための空間',
+    type: 'channel',
+    isPrivate: false,
+    unreadCount: 0,
+    participants: [],
+    createdAt: new Date(),
+    avatar: '/api/placeholder/40/40',
+  },
+  {
+    id: 'jlpt-n1',
+    name: 'JLPT N1',
+    description: '最高級日本語学習者のための空間',
+    type: 'channel',
+    isPrivate: false,
+    unreadCount: 2,
+    participants: [],
+    createdAt: new Date(),
+    avatar: '/api/placeholder/40/40',
+  },
+  {
+    id: 'kanji-club',
+    name: '漢字クラブ',
+    description: '漢字学習パートナーを探す',
+    type: 'group',
+    isPrivate: false,
+    unreadCount: 0,
+    participants: [],
+    createdAt: new Date(),
+    avatar: '/api/placeholder/40/40',
+  },
+  {
+    id: 'pronunciation-help',
+    name: '発音ヘルプ',
+    description: '日本語の発音支援',
+    type: 'private',
+    isPrivate: true,
+    unreadCount: 0,
+    participants: [],
+    createdAt: new Date(),
+    avatar: '/api/placeholder/40/40',
+  },
+]
+
+export default function ChatSidebar({ activeRoom, onRoomChange, currentUser }: ChatSidebarProps) {
   const [searchTerm, setSearchTerm] = useState('')
-  const [filteredConversations, setFilteredConversations] = useState<Conversation[]>([])
+  const [pinnedRooms, setPinnedRooms] = useState<string[]>(['main-chat-room'])
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(['channels'])
 
-  const loadConversations = async () => {
-    try {
-      setIsLoading(true)
-      const response = await fetch('/api/chat/conversations?user_id=anonymous')
-      const data = await response.json()
-      const loadedConversations = data.conversations || []
-      setConversations(loadedConversations)
-      setFilteredConversations(loadedConversations)
-    } catch (error) {
-      console.error('Error loading conversations:', error)
-    } finally {
-      setIsLoading(false)
-    }
+  const categories = {
+    channels: {
+      label: 'チャンネル',
+      icon: Hash,
+      rooms: MOCK_ROOMS.filter((r) => r.type === 'channel'),
+    },
+    groups: { label: 'グループ', icon: Users, rooms: MOCK_ROOMS.filter((r) => r.type === 'group') },
+    private: {
+      label: 'プライベート',
+      icon: Lock,
+      rooms: MOCK_ROOMS.filter((r) => r.type === 'private' || r.isPrivate),
+    },
   }
 
-  useEffect(() => {
-    loadConversations()
-  }, [])
-
-  useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setFilteredConversations(conversations)
-    } else {
-      const filtered = conversations.filter((conv) =>
-        conv.title.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      setFilteredConversations(filtered)
-    }
-  }, [searchTerm, conversations])
-
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-
-    if (confirm('Delete this conversation?')) {
-      try {
-        await fetch(`/api/chat/conversations?id=${id}`, { method: 'DELETE' })
-        setConversations((prev) => prev.filter((conv) => conv.id !== id))
-        onDeleteConversation(id)
-      } catch (error) {
-        console.error('Error deleting conversation:', error)
-      }
-    }
-  }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-
-    if (diffInHours < 24) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    } else if (diffInHours < 48) {
-      return 'Yesterday'
-    } else if (diffInHours < 168) {
-      return date.toLocaleDateString([], { weekday: 'short' })
-    } else {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
-    }
-  }
-
-  if (isCollapsed) {
-    return (
-      <div className="w-16 bg-gradient-to-b from-gray-900 to-gray-800 border-r border-gray-700 flex flex-col items-center py-4 gap-4">
-        <button
-          onClick={() => setIsCollapsed(false)}
-          className="w-12 h-12 bg-gray-800 hover:bg-gray-700 rounded-xl flex items-center justify-center transition-colors"
-          title="Expand sidebar"
-        >
-          <svg
-            className="w-6 h-6 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 5l7 7-7 7M5 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-        <button
-          onClick={onNewConversation}
-          className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 rounded-xl flex items-center justify-center transition-all shadow-lg"
-          title="New chat"
-        >
-          <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-        </button>
-      </div>
+  const togglePinned = (roomId: string) => {
+    setPinnedRooms((prev) =>
+      prev.includes(roomId) ? prev.filter((id) => id !== roomId) : [...prev, roomId]
     )
   }
 
-  return (
-    <div className="w-80 bg-gradient-to-b from-gray-900 to-gray-800 border-r border-gray-700 flex flex-col">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-700">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <svg className="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
-              <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
-            </svg>
-            Chat History
-          </h2>
-          <button
-            onClick={() => setIsCollapsed(true)}
-            className="w-8 h-8 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors"
-            title="Collapse sidebar"
-          >
-            <svg
-              className="w-4 h-4 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-              />
-            </svg>
-          </button>
-        </div>
+  const toggleCategory = (categoryKey: string) => {
+    setExpandedCategories((prev) =>
+      prev.includes(categoryKey)
+        ? prev.filter((key) => key !== categoryKey)
+        : [...prev, categoryKey]
+    )
+  }
 
-        {/* Search Bar */}
-        <div className="relative mb-3">
+  const filteredRooms = Object.entries(categories)
+    .map(([key, category]) => {
+      const filtered = category.rooms.filter(
+        (room) =>
+          room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          room.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      return { key, ...category, rooms: filtered }
+    })
+    .filter((cat) => cat.rooms.length > 0)
+
+  const isCategoryExpanded = (key: string) => expandedCategories.includes(key)
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Search */}
+      <div className="p-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search conversations..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            placeholder="チャットを検索..."
+            className="w-full pl-10 pr-4 py-2 bg-gray-100/50 dark:bg-gray-700/50 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           />
-          <svg
-            className="absolute right-3 top-2.5 w-4 h-4 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
         </div>
-
-        <button
-          onClick={onNewConversation}
-          className="w-full px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 rounded-xl font-semibold text-white shadow-lg transition-all hover:shadow-xl flex items-center justify-center gap-2"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          New Chat
-        </button>
       </div>
 
-      {/* Conversations List */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {isLoading ? (
-          <div className="p-4 flex flex-col gap-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse bg-gray-800 rounded-xl h-20"></div>
-            ))}
-          </div>
-        ) : conversations.length === 0 ? (
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 bg-gray-800 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg
-                className="w-8 h-8 text-gray-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-            </div>
-            <p className="text-gray-400 text-sm">No conversations yet</p>
-            <p className="text-gray-500 text-xs mt-1">Start a new chat to begin</p>
-          </div>
-        ) : (
-          <div className="p-3 space-y-2">
-            {filteredConversations.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => onSelectConversation(conv.id)}
-                className={`w-full text-left p-3 rounded-xl transition-all group hover:bg-gray-800 ${
-                  currentConversationId === conv.id
-                    ? 'bg-gradient-to-r from-indigo-900/50 to-purple-900/50 border-2 border-indigo-500/50'
-                    : 'bg-gray-800/50 border-2 border-transparent'
-                }`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-white font-medium text-sm truncate mb-1">{conv.title}</h3>
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
-                      <span className="flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path
-                            fillRule="evenodd"
-                            d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        {conv.message_count}
-                      </span>
-                      <span>•</span>
-                      <span>{formatDate(conv.last_message_at)}</span>
-                    </div>
-                  </div>
+      {/* Room Categories */}
+      <div className="flex-1 overflow-y-auto px-4">
+        {filteredRooms.map(({ key, label, icon: Icon, rooms }) => {
+          const isExpanded = isCategoryExpanded(key)
 
-                  <button
-                    onClick={(e) => handleDelete(conv.id, e)}
-                    className="opacity-0 group-hover:opacity-100 w-7 h-7 bg-red-500/20 hover:bg-red-500 rounded-lg flex items-center justify-center transition-all"
-                    title="Delete conversation"
-                  >
-                    <svg
-                      className="w-4 h-4 text-red-400 group-hover:text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                  </button>
+          return (
+            <div key={key} className="mb-4">
+              {/* Category Header */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => toggleCategory(key)}
+                className="w-full flex items-center justify-between p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-800/30"
+              >
+                <div className="flex items-center gap-2">
+                  <Icon className="w-4 h-4" />
+                  <span className="text-sm font-medium">{label}</span>
+                  <span className="text-xs text-gray-400">({rooms.length})</span>
                 </div>
-              </button>
-            ))}
-          </div>
+                <motion.div
+                  animate={{ rotate: isExpanded ? 90 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <MoreVertical className="w-4 h-4" />
+                </motion.div>
+              </motion.button>
+
+              {/* Rooms List */}
+              <AnimatePresence>
+                {isExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="pl-2 space-y-1"
+                  >
+                    {rooms.map((room, index) => {
+                      const isPinned = pinnedRooms.includes(room.id)
+                      const isActive = activeRoom.id === room.id
+                      const hasUnread = room.unreadCount > 0
+
+                      return (
+                        <motion.div
+                          key={room.id}
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: index * 0.05 }}
+                        >
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => onRoomChange(room)}
+                            className={`w-full p-3 rounded-xl transition-all duration-200 border ${
+                              isActive
+                                ? 'bg-blue-50/80 dark:bg-blue-900/20 border-blue-500/30 shadow-md'
+                                : 'hover:bg-gray-50/50 dark:hover:bg-gray-800/50 border-transparent'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              {/* Room Avatar */}
+                              <div className="relative">
+                                {room.avatar ? (
+                                  <Image
+                                    src={room.avatar}
+                                    alt={room.name}
+                                    width={40}
+                                    height={40}
+                                    className="rounded-xl object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-semibold">
+                                    {room.name.charAt(0)}
+                                  </div>
+                                )}
+                                {room.isPrivate && (
+                                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                                    <Lock className="w-3 h-3 text-white" />
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Room Info */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">
+                                    {room.name}
+                                  </h4>
+                                  {hasUnread && (
+                                    <motion.div
+                                      animate={{ scale: [1, 1.2, 1] }}
+                                      transition={{ repeat: Infinity, duration: 2 }}
+                                      className="w-2 h-2 bg-red-500 rounded-full"
+                                    />
+                                  )}
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">
+                                  {room.description}
+                                </p>
+                                <div className="flex items-center gap-3 mt-2">
+                                  <span className="text-xs text-gray-500">
+                                    {formatDistanceToNow(room.createdAt, {
+                                      addSuffix: true,
+                                      locale: ja,
+                                    })}
+                                  </span>
+                                  {room.unreadCount > 0 && (
+                                    <span className="text-xs font-medium px-2 py-1 bg-red-500 text-white rounded-full">
+                                      {room.unreadCount}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Actions */}
+                              <div className="flex flex-col gap-1">
+                                <motion.button
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  onClick={() => togglePinned(room.id)}
+                                  className={`p-1 rounded transition-colors ${
+                                    isPinned
+                                      ? 'text-yellow-500 hover:text-yellow-600'
+                                      : 'text-gray-400 hover:text-yellow-500'
+                                  }`}
+                                >
+                                  <Pin className="w-4 h-4" />
+                                </motion.button>
+                              </div>
+                            </div>
+                          </motion.button>
+                        </motion.div>
+                      )
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )
+        })}
+
+        {/* Empty State */}
+        {searchTerm && filteredRooms.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-8"
+          >
+            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              &quot;{searchTerm}&quot; に一致するチャットが見つかりません
+            </p>
+          </motion.div>
         )}
       </div>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-gray-700 space-y-3">
-        {/* Teacher Info */}
-        <div className="bg-gradient-to-br from-amber-900/20 to-orange-900/20 rounded-xl p-3 border border-amber-500/30">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center">
-              <span className="text-sm font-bold text-white">先生</span>
-            </div>
-            <div className="flex-1">
-              <div className="text-xs font-bold text-white">Sensei Tanaka 田中先生</div>
-              <div className="text-xs text-amber-400 font-semibold">40 Years Experience</div>
-            </div>
-          </div>
-          <p className="text-xs text-gray-400">Teaching in English with Japanese examples</p>
-        </div>
-
-        {/* AI Memory Info */}
-        <div className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-xl p-3 border border-indigo-500/30">
-          <div className="flex items-center gap-2 mb-2">
-            <svg className="w-4 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-            </svg>
-            <span className="text-xs font-semibold text-white">Extended Memory</span>
-          </div>
-          <p className="text-xs text-gray-400">Long conversations with full context retention</p>
+      {/* Quick Actions */}
+      <div className="p-4 border-t border-gray-200/30 dark:border-gray-700/30">
+        <div className="flex gap-2">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+          >
+            新しいチャット
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm font-medium transition-colors"
+          >
+            招待
+          </motion.button>
         </div>
       </div>
     </div>

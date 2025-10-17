@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 
 export default function CherryBlossomScene() {
@@ -12,8 +12,26 @@ export default function CherryBlossomScene() {
     petals: THREE.Mesh[]
     animationId: number
   } | null>(null)
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
+    // Performance detection - skip on low-end devices
+    const isMobile = window.innerWidth < 768
+    const isLowEndDevice =
+      navigator.userAgent.includes('Mobile') && window.deviceMemory && window.deviceMemory < 4
+
+    if (isLowEndDevice) return
+
+    // Delay loading to prioritize main content
+    const loadTimer = setTimeout(() => {
+      setIsVisible(true)
+      initializeScene()
+    }, 300)
+
+    return () => clearTimeout(loadTimer)
+  }, [])
+
+  const initializeScene = () => {
     if (!containerRef.current) return
 
     const scene = new THREE.Scene()
@@ -25,21 +43,26 @@ export default function CherryBlossomScene() {
     )
     camera.position.z = 30
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: false, // Performance optimization
+    })
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setClearColor(0x000000, 0)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)) // Cap DPI
     containerRef.current.appendChild(renderer.domElement)
 
     const petalGeometry = new THREE.PlaneGeometry(0.5, 0.7)
     const petalMaterial = new THREE.MeshBasicMaterial({
       color: 0xffb7c5,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.6, // Reduced opacity for performance
       side: THREE.DoubleSide,
     })
 
     const petals: THREE.Mesh[] = []
-    for (let i = 0; i < 50; i++) {
+    // Reduced from 50 to 20 petals for better performance
+    for (let i = 0; i < 20; i++) {
       const petal = new THREE.Mesh(petalGeometry, petalMaterial)
       petal.position.set(
         (Math.random() - 0.5) * 80,
@@ -48,31 +71,36 @@ export default function CherryBlossomScene() {
       )
       petal.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI)
       petal.userData = {
-        speed: Math.random() * 0.02 + 0.01,
-        rotationSpeed: (Math.random() - 0.5) * 0.05,
-        swayAmplitude: Math.random() * 0.3,
-        swaySpeed: Math.random() * 0.02,
+        speed: Math.random() * 0.01 + 0.005, // Slower animations
+        rotationSpeed: (Math.random() - 0.5) * 0.02, // Reduced rotation
+        swayAmplitude: Math.random() * 0.15, // Less movement
+        swaySpeed: Math.random() * 0.01,
       }
       scene.add(petal)
       petals.push(petal)
     }
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6) // Reduced intensity
     scene.add(ambientLight)
 
     let animationId: number = 0
+    let lastTime = 0
 
-    const animate = () => {
+    const animate = (currentTime: number) => {
       animationId = requestAnimationFrame(animate)
+
+      // Throttle to ~30fps for performance
+      if (currentTime - lastTime < 33) return
+      lastTime = currentTime
 
       petals.forEach((petal) => {
         petal.position.y -= petal.userData.speed
         petal.position.x +=
           Math.sin(Date.now() * petal.userData.swaySpeed) * petal.userData.swayAmplitude * 0.01
 
-        petal.rotation.x += petal.userData.rotationSpeed
-        petal.rotation.y += petal.userData.rotationSpeed * 0.5
-        petal.rotation.z += petal.userData.rotationSpeed * 0.3
+        petal.rotation.x += petal.userData.rotationSpeed * 0.3 // Slower rotation
+        petal.rotation.y += petal.userData.rotationSpeed * 0.15
+        petal.rotation.z += petal.userData.rotationSpeed * 0.1
 
         if (petal.position.y < -20) {
           petal.position.y = 40
@@ -107,7 +135,9 @@ export default function CherryBlossomScene() {
         container.removeChild(renderer.domElement)
       }
     }
-  }, [])
+  }
+
+  if (!isVisible) return null
 
   return (
     <div

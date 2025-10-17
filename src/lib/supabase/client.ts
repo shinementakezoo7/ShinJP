@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 // Define the types for our Supabase client
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
@@ -646,9 +646,33 @@ export type Database = {
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
-// Create Supabase client (with fallback for development)
-export const supabase =
-  supabaseUrl && supabaseAnonKey ? createClient<Database>(supabaseUrl, supabaseAnonKey) : null
+// Validate URL format to avoid runtime errors when placeholders are present
+function isValidHttpUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+// Create Supabase client (guard against invalid env configuration)
+let initializedClient: SupabaseClient<Database> | null = null
+if (supabaseUrl && supabaseAnonKey && isValidHttpUrl(supabaseUrl)) {
+  try {
+    initializedClient = createClient<Database>(supabaseUrl, supabaseAnonKey)
+  } catch (e) {
+    console.warn('Supabase client not initialized due to invalid configuration:', e)
+    initializedClient = null
+  }
+} else if (supabaseUrl || supabaseAnonKey) {
+  // Env vars present but invalid (likely placeholders); avoid crashing
+  console.warn(
+    'Invalid Supabase environment configuration. Set NEXT_PUBLIC_SUPABASE_URL to a valid http/https URL and provide a valid NEXT_PUBLIC_SUPABASE_ANON_KEY.'
+  )
+}
+
+export const supabase = initializedClient
 
 // Server-side client with service role key (for server-side operations)
 export const createServiceRoleClient = () => {

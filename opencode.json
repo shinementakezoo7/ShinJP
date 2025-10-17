@@ -8,20 +8,27 @@
         "baseURL": "https://apis.iflow.cn/v1/chat/completions",
         "apiKey": "sk-5c25aa5f345613c05b9f556a11e2bfb7",
         "keepAlive": true,
-        "connectionPoolSize": 1,
-        "maxRetries": 2,
+        "connectionPoolSize": 5,
+        "maxRetries": 3,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 120000,
+        "retryDelay": 1000,
         "headers": {
           "Connection": "keep-alive",
-          "Keep-Alive": "timeout=60, max=1000"
+          "Keep-Alive": "timeout=120, max=2000",
+          "Accept-Encoding": "gzip, deflate, br"
         }
       },
       "models": {
         "qwen3-max": {
           "name": "Qwen3-Max",
           "options": {
-            "temperature": 0.2
+            "temperature": 0.0,
+            "max_tokens": 4096,
+            "top_p": 0.95,
+            "stream": true,
+            "presence_penalty": 0,
+            "frequency_penalty": 0
           }
         }
       }
@@ -33,20 +40,27 @@
         "baseURL": "https://apis.iflow.cn/v1/chat/completions",
         "apiKey": "sk-bfe24a8d0c433c6447ce48f80a88bd4c",
         "keepAlive": true,
-        "connectionPoolSize": 1,
-        "maxRetries": 2,
+        "connectionPoolSize": 5,
+        "maxRetries": 3,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 120000,
+        "retryDelay": 1000,
         "headers": {
           "Connection": "keep-alive",
-          "Keep-Alive": "timeout=60, max=1000"
+          "Keep-Alive": "timeout=120, max=2000",
+          "Accept-Encoding": "gzip, deflate, br"
         }
       },
       "models": {
         "glm-4.6": {
           "name": "GLM-4.6",
           "options": {
-            "temperature": 0.3
+            "temperature": 0.0,
+            "max_tokens": 4096,
+            "top_p": 0.95,
+            "stream": true,
+            "presence_penalty": 0,
+            "frequency_penalty": 0
           }
         }
       }
@@ -58,20 +72,27 @@
         "baseURL": "https://apis.iflow.cn/v1/chat/completions",
         "apiKey": "sk-614e45520f3320f6c979501746684961",
         "keepAlive": true,
-        "connectionPoolSize": 1,
-        "maxRetries": 2,
+        "connectionPoolSize": 5,
+        "maxRetries": 3,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 120000,
+        "retryDelay": 1000,
         "headers": {
           "Connection": "keep-alive",
-          "Keep-Alive": "timeout=60, max=1000"
+          "Keep-Alive": "timeout=120, max=2000",
+          "Accept-Encoding": "gzip, deflate, br"
         }
       },
       "models": {
         "kimi-k2-0905": {
           "name": "Kimi K2-0905",
           "options": {
-            "temperature": 0.3
+            "temperature": 0.0,
+            "max_tokens": 8192,
+            "top_p": 0.95,
+            "stream": true,
+            "presence_penalty": 0,
+            "frequency_penalty": 0
           }
         }
       }
@@ -83,107 +104,130 @@
         "baseURL": "https://apis.iflow.cn/v1/chat/completions",
         "apiKey": "sk-f8f34098b3bda8b3c20067619ef193a4",
         "keepAlive": true,
-        "connectionPoolSize": 1,
-        "maxRetries": 2,
+        "connectionPoolSize": 5,
+        "maxRetries": 3,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 120000,
+        "retryDelay": 1000,
         "headers": {
           "Connection": "keep-alive",
-          "Keep-Alive": "timeout=60, max=1000"
+          "Keep-Alive": "timeout=120, max=2000",
+          "Accept-Encoding": "gzip, deflate, br"
         }
       },
       "models": {
         "qwen3-coder-plus": {
           "name": "Qwen3-Coder-Plus",
           "options": {
-            "temperature": 0.2
+            "temperature": 0.0,
+            "max_tokens": 8192,
+            "top_p": 0.95,
+            "stream": true,
+            "presence_penalty": 0,
+            "frequency_penalty": 0
           }
         }
       }
     },
     "iflow-backup1": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "iFlow Backup 1 (Duplicate for Manual Switch)",
+      "name": "iFlow Backup 1 (Failover)",
       "options": {
         "baseURL": "https://apis.iflow.cn/v1/chat/completions",
         "apiKey": "sk-7ef2b459a31a8a200658075088ba56a4",
         "keepAlive": true,
-        "connectionPoolSize": 1,
+        "connectionPoolSize": 3,
         "maxRetries": 2,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 90000,
+        "retryDelay": 2000,
         "headers": {
           "Connection": "keep-alive",
-          "Keep-Alive": "timeout=60, max=1000"
+          "Keep-Alive": "timeout=90, max=1000",
+          "Accept-Encoding": "gzip, deflate, br"
         }
       },
       "models": {
         "qwen3-max": {
           "name": "Qwen3-Max (Backup)",
           "options": {
-            "temperature": 0.1
+            "temperature": 0.0,
+            "max_tokens": 4096,
+            "stream": true
           }
         },
         "glm-4.6": {
           "name": "GLM-4.6 (Backup)",
           "options": {
-            "temperature": 0.1
+            "temperature": 0.0,
+            "max_tokens": 4096,
+            "stream": true
           }
         }
       }
     },
     "iflow-backup2": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "iFlow Backup 2 (Duplicate for Manual Switch)",
+      "name": "iFlow Backup 2 (Failover)",
       "options": {
         "baseURL": "https://apis.iflow.cn/v1/chat/completions",
         "apiKey": "sk-d3c2ff9e09c563957987921812fa2b63",
         "keepAlive": true,
-        "connectionPoolSize": 1,
+        "connectionPoolSize": 3,
         "maxRetries": 2,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 90000,
+        "retryDelay": 2000,
         "headers": {
           "Connection": "keep-alive",
-          "Keep-Alive": "timeout=60, max=1000"
+          "Keep-Alive": "timeout=90, max=1000",
+          "Accept-Encoding": "gzip, deflate, br"
         }
       },
       "models": {
         "kimi-k2-0905": {
           "name": "Kimi K2-0905 (Backup)",
           "options": {
-            "temperature": 0.3
+            "temperature": 0.0,
+            "max_tokens": 8192,
+            "stream": true
           }
         },
         "qwen3-coder-plus": {
           "name": "Qwen3-Coder-Plus (Backup)",
           "options": {
-            "temperature": 0.2
+            "temperature": 0.0,
+            "max_tokens": 8192,
+            "stream": true
           }
         }
       }
     },
     "iflow-backup3": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "iFlow Backup 3 (Duplicate for Manual Switch)",
+      "name": "iFlow Backup 3 (Failover)",
       "options": {
         "baseURL": "https://apis.iflow.cn/v1/chat/completions",
         "apiKey": "sk-ea1e4e8f5c0ef3e26fdad2dcc13528ef",
         "keepAlive": true,
-        "connectionPoolSize": 1,
+        "connectionPoolSize": 3,
         "maxRetries": 2,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 90000,
+        "retryDelay": 2000,
         "headers": {
           "Connection": "keep-alive",
-          "Keep-Alive": "timeout=60, max=1000"
+          "Keep-Alive": "timeout=90, max=1000",
+          "Accept-Encoding": "gzip, deflate, br"
         }
       },
       "models": {
         "qwen3-max": {
           "name": "Qwen3-Max (Backup Alt)",
           "options": {
-            "temperature": 0.1
+            "temperature": 0.0,
+            "max_tokens": 4096,
+            "stream": true
           }
         }
       }
@@ -195,20 +239,27 @@
         "baseURL": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints",
         "apiKey": "d_vctRZC-PFBNrCsqKY7sZPjnfs0lRX_ANIg10t2RFs",
         "keepAlive": true,
-        "connectionPoolSize": 1,
-        "maxRetries": 2,
+        "connectionPoolSize": 4,
+        "maxRetries": 3,
         "streaming": true,
-        "timeout": 300000,
+        "timeout": 120000,
+        "retryDelay": 1500,
         "headers": {
           "Connection": "keep-alive",
-          "Keep-Alive": "timeout=60, max=1000"
+          "Keep-Alive": "timeout=120, max=1500",
+          "Accept-Encoding": "gzip, deflate, br"
         }
       },
       "models": {
         "ep-rtltnw-1760176619671760889": {
           "name": "StreamLake Custom Model",
           "options": {
-            "temperature": 0.7
+            "temperature": 0.0,
+            "max_tokens": 4096,
+            "top_p": 0.9,
+            "stream": true,
+            "presence_penalty": 0,
+            "frequency_penalty": 0
           }
         }
       }

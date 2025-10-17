@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface Chapter {
   id: string
@@ -13,12 +13,21 @@ interface Chapter {
   grammar: Array<{ point: string; explanation: string; example: string }>
 }
 
-export default function BookReaderPage({ params }: { params: { id: string } }) {
+export default function BookReaderPage({ params }: { params: Promise<{ id: string }> }) {
+  const [resolvedParams, setResolvedParams] = useState<{ id: string } | null>(null)
   const _router = useRouter()
   const [currentChapter, setCurrentChapter] = useState(0)
   const [showVocabulary, setShowVocabulary] = useState(false)
   const [showGrammar, setShowGrammar] = useState(false)
   const [fontSize, setFontSize] = useState(16)
+
+  useEffect(() => {
+    params.then(setResolvedParams)
+  }, [params])
+
+  if (!resolvedParams) {
+    return <div>Loading...</div>
+  }
 
   // Sample book data (replace with actual API call)
   const book = {

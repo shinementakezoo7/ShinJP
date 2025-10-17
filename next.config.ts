@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import million from 'million/compiler'
 import bundleAnalyzer from '@next/bundle-analyzer'
 
 const withBundleAnalyzer = bundleAnalyzer({
@@ -38,18 +39,18 @@ const nextConfig: NextConfig = {
     // React 19 Compiler - automatic optimization!
     reactCompiler: true,
 
-    // Turbopack optimizations
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-
     // Optimize package imports
     optimizePackageImports: ['lucide-react', 'recharts', '@react-three/fiber', '@react-three/drei'],
+  },
+
+  // Turbopack optimizations (updated from experimental.turbo)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
   },
 
   // Headers for WebSockets and security
@@ -94,6 +95,11 @@ const nextConfig: NextConfig = {
         ],
       },
     ]
+  },
+
+  webpack(config) {
+    config.plugins.push(million.webpack({ auto: { rsc: true } }))
+    return config
   },
 }
 

@@ -41,22 +41,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if NVIDIA API is configured
-    if (
-      !process.env.NVIDIA_API_KEY &&
-      !process.env.NVIDIA_API_KEY_1 &&
-      !process.env.NVIDIA_API_KEY_2
-    ) {
-      console.error('❌ NVIDIA API keys not configured')
+    // Check if any AI provider is configured
+    const hasNvidia = Boolean(
+      process.env.NVIDIA_API_KEY || process.env.NVIDIA_API_KEY_1 || process.env.NVIDIA_API_KEY_2
+    )
+    const hasOpenAI = Boolean(process.env.OPENAI_API_KEY)
+
+    if (!hasNvidia && !hasOpenAI) {
+      console.error('❌ No AI providers configured')
       return NextResponse.json(
         {
-          error: 'NVIDIA API is not configured',
-          details:
-            'Please set NVIDIA_API_KEY, NVIDIA_API_KEY_1, or NVIDIA_API_KEY_2 in your environment variables.',
+          error: 'AI providers not configured',
+          details: 'Please configure the required AI service environment variables.',
         },
         { status: 503 }
       )
     }
+
+    // Log which provider is being used
+    console.log(`🤖 Using AI provider - NVIDIA: ${hasNvidia}, OpenAI: ${hasOpenAI}`)
 
     // System prompt for experienced Japanese teacher
     const systemPrompt = {
